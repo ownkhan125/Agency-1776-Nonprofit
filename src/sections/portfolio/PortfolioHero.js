@@ -17,8 +17,11 @@ export function PortfolioHero() {
       id="portfolio-hero"
       withBorder={false}
       revealMode="once"
-      className="relative flex min-h-[92svh] items-center overflow-hidden scanlines"
-      innerClassName="relative z-10 mx-auto w-full max-w-[1600px] px-6 py-20 md:px-10 md:py-28"
+      // `pt-*` clears the fixed TopBar + NavBar chrome (~104 px) with
+      // a comfortable breathing gap; `pb-*` matches for symmetric
+      // centering. Content wrapper stays vertically centered.
+      className="relative flex min-h-[max(680px,100svh)] items-center overflow-hidden scanlines"
+      innerClassName="relative z-10 mx-auto w-full max-w-[1600px] px-6 pt-32 pb-16 sm:pt-36 md:px-10 md:pt-40 md:pb-20 lg:pt-44"
     >
       <div
         aria-hidden="true"
@@ -54,7 +57,7 @@ export function PortfolioHero() {
         <SplitText
           as="h1"
           scrub
-          className="text-[clamp(4rem,11vw,10rem)] font-semibold uppercase leading-[0.92] tracking-tight"
+          className="text-balance text-[clamp(4rem,11vw,10rem)] font-semibold uppercase leading-[0.96] tracking-tight"
           text="Our Work"
         />
         <SplitText

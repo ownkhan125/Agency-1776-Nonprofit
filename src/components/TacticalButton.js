@@ -50,7 +50,12 @@ export function TacticalButton({
   const handleEnter = () => tlRef.current?.play();
   const handleLeave = () => tlRef.current?.reverse();
 
-  const Tag = as || (href ? "a" : "button");
+  // Route hrefs (start with `/`) render as Next.js Link so navigation
+  // is client-side + prefetched. External links (`http…`, `mailto:`)
+  // fall back to a plain <a>. Non-href buttons stay as <button>.
+  const isInternalRoute =
+    typeof href === "string" && href.startsWith("/") && !href.startsWith("//");
+  const Tag = as || (isInternalRoute ? NextLink : href ? "a" : "button");
 
   return (
     <Tag

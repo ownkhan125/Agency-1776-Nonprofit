@@ -88,7 +88,10 @@
       "Bash(node run.js /tmp/playwright-h1-audit.js)",
       "Bash(node run.js /tmp/verify-spacing.js)",
       "Bash(node run.js /tmp/verify-stars.js)",
-      "Bash(node run.js /tmp/verify-stars2.js)"
+      "Bash(node run.js /tmp/verify-stars2.js)",
+      "Bash(node run.js /tmp/verify-style.js)",
+      "Bash(node run.js /tmp/verify-hero.js)",
+      "Bash(node run.js /tmp/playwright-theme-swap.js)"
     ]
   }
 }

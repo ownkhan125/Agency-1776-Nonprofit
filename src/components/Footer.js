@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap, registerGsap } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
@@ -130,7 +131,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
           {/* Brand column */}
           <div data-footer-reveal className="flex flex-col gap-5">
-            <a
+            <Link
               href="/"
               data-cursor="link"
               className="inline-flex items-center gap-3"
@@ -144,7 +145,7 @@ export function Footer() {
                   Nonprofit Division
                 </span>
               </span>
-            </a>
+            </Link>
             <p className="max-w-xs text-sm leading-relaxed text-foreground/60">
               Nonprofit websites that earn donor confidence and make it easier
               to give, volunteer, partner, and stay involved.
@@ -159,13 +160,13 @@ export function Footer() {
             <ul className="flex flex-col gap-2.5 text-sm">
               {PRIMARY_LINKS.map((l) => (
                 <li key={l.href}>
-                  <a
+                  <Link
                     href={l.href}
                     data-cursor="link"
                     className="text-foreground/70 transition-colors hover:text-accent"
                   >
                     {l.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -182,14 +183,14 @@ export function Footer() {
               <span className="break-all text-foreground/85">
                 {EMAIL}
               </span>
-              <a
+              <Link
                 href="/contact"
                 data-cursor="link"
                 className="inline-flex items-center gap-2 whitespace-nowrap text-foreground transition-colors hover:text-accent"
               >
                 Start a nonprofit brief
                 <span aria-hidden="true">→</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

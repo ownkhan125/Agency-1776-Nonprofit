@@ -525,14 +525,27 @@ export function WaveGridBackground({
       );
     }, container);
 
+    // Re-read the CSS custom properties and push the new values into the
+    // shader uniforms. Called on every `data-theme` mutation so the
+    // wave grid re-tints instantly the moment the ThemeToggle fires —
+    // no page refresh, no rebuild, no dropped frames.
+    //
+    // Kept minimal on purpose: only the shader uniforms are touched.
+    // Scene background stays `null` and the renderer clearColor stays
+    // `(0x000000, 0)` — a prior version of this callback set both to
+    // the (opaque) bg colour, which broke transparency for every
+    // subsequent frame after the first theme swap. Do NOT reintroduce
+    // either of those writes here.
     const refreshPalette = () => {
-      const base = readTokenColor("--color-foreground", "#0f0f0f");
+      const base = readTokenColor("--color-background", "#ffffff");
       const high = readTokenColor("--color-accent", "#bf0a30");
-      const bg = readTokenColor("--color-background", "#ffffff");
       colorUniforms.uColorBase.value.set(base);
       colorUniforms.uColorHigh.value.set(high);
-      scene.background = new THREE.Color(bg).multiplyScalar(0.35);
-      renderer.setClearColor(bg, 1);
+      // Force a single render so the reduced-motion path (which only
+      // paints once at mount) reflects the swap. In the normal
+      // animation loop the very next frame picks up the new uniforms
+      // automatically, so this render is essentially free.
+      composer.render();
     };
 
     // The ThemeToggle mutates data-theme on <html>. Watch that attribute

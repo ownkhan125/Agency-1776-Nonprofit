@@ -156,7 +156,18 @@ export function Hero() {
       id="hero"
       ref={rootRef}
       data-reveal-mode="once"
-      className="relative isolate flex h-[100svh] min-h-[680px] overflow-hidden bg-background"
+      // Vertical centering rules:
+      //   • `min-h-[100svh]` — grows past the viewport if the H1 wraps
+      //     into a taller stack (avoids the old fixed 100svh clipping
+      //     the CTA on very short viewports).
+      //   • `min-h-[680px]` — floor so ultra-tall content still fits
+      //     without collapsing on tiny landscape phones.
+      //   • `items-center` + `flex` — vertically centers the content
+      //     wrapper regardless of how many lines the H1 wraps into.
+      //   • `pt-*` — clears the fixed TopBar + NavBar chrome (~104 px)
+      //     with a comfortable breathing gap. `pb-*` matches for
+      //     symmetric centering around the H1.
+      className="relative isolate flex min-h-[max(680px,100svh)] items-center overflow-hidden bg-background pt-32 pb-16 sm:pt-36 md:pt-40 md:pb-20 lg:pt-44"
     >
       {/* z-0 — wave grid canvas fills the full section. Its own GSAP
           fade-in (inside WaveGridBackground) is the FIRST beat of the
@@ -217,13 +228,20 @@ export function Hero() {
       </div>
 
       {/* z-10 — content, max-w'd in its own wrapper so the wave grid
-          above stays edge-to-edge regardless of monitor width. */}
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] flex-col justify-center px-6 md:px-10">
+          above stays edge-to-edge regardless of monitor width. The
+          section is `flex items-center`, so this wrapper needs no
+          `h-full` / `justify-center` — vertical centering is the
+          parent's job now. */}
+      <div className="relative z-10 mx-auto w-full max-w-[1600px] px-6 md:px-10">
         <div className="mx-auto flex w-full max-w-4xl flex-col items-center text-center">
           <SplitText
             as="h1"
             scrub
-            className="max-w-6xl text-[clamp(3.1rem,10.25vw,9.2rem)] font-semibold leading-[0.92] tracking-tight"
+            // `text-wrap: balance` gets Tailwind's `text-balance` helper
+            // so the H1 breaks into visually even lines rather than a
+            // long first line + orphan. Line-height loosened from 0.92
+            // → 0.98 so wrapped rows don't kern into each other.
+            className="max-w-4xl text-balance text-[clamp(3.1rem,10.25vw,9.2rem)] font-semibold leading-[0.98] tracking-tight"
             text="We Help More People Believe in Your Mission"
           />
 

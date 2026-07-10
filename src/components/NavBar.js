@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { gsap, ScrollTrigger, registerGsap } from "@/animations/gsap";
@@ -63,7 +64,7 @@ function NavLink({ href, label, active, onHover }) {
   };
 
   return (
-    <a
+    <Link
       href={href}
       data-cursor="link"
       onMouseEnter={handleEnter}
@@ -100,7 +101,7 @@ function NavLink({ href, label, active, onHover }) {
         className="pointer-events-none absolute inset-x-3 bottom-0 h-px origin-center bg-accent"
         style={{ transform: "scaleX(0)" }}
       />
-    </a>
+    </Link>
   );
 }
 
@@ -210,7 +211,7 @@ export function NavBar() {
 
         {/* Brand — logo + name/division. Name+division hidden on the
             narrowest widths so the pill never crowds. */}
-        <a
+        <Link
           href="/"
           data-cursor="link"
           aria-label="Agency 1776 — home"
@@ -247,7 +248,7 @@ export function NavBar() {
               Nonprofit
             </span>
           </span>
-        </a>
+        </Link>
 
         {/* Nav — hidden on mobile. Active state driven by pathname. */}
         <ul className="hidden items-center gap-1 md:flex lg:gap-3">
@@ -321,7 +322,7 @@ export function NavBar() {
                   const isActive = l.match.test(pathname || "");
                   return (
                     <li key={l.href}>
-                      <a
+                      <Link
                         href={l.href}
                         data-cursor="link"
                         onClick={() => setMenuOpen(false)}
@@ -345,7 +346,7 @@ export function NavBar() {
                         <span aria-hidden="true" className="text-accent">
                           →
                         </span>
-                      </a>
+                      </Link>
                     </li>
                   );
                 })}

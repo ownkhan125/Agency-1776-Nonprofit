@@ -44,8 +44,11 @@ export function ServicesHero() {
       id="services-hero"
       withBorder={false}
       revealMode="once"
-      className="relative flex min-h-[100svh] items-center overflow-hidden scanlines"
-      innerClassName="relative z-10 mx-auto w-full max-w-[1600px] px-6 py-20 md:px-10 md:py-28"
+      // `pt-*` clears the fixed TopBar + NavBar chrome (~104 px) with a
+      // comfortable breathing gap; `pb-*` matches for symmetric
+      // centering. `items-center` still centers the content wrapper.
+      className="relative flex min-h-[max(680px,100svh)] items-center overflow-hidden scanlines"
+      innerClassName="relative z-10 mx-auto w-full max-w-[1600px] px-6 pt-32 pb-16 sm:pt-36 md:px-10 md:pt-40 md:pb-20 lg:pt-44"
     >
       <div
         aria-hidden="true"
@@ -86,7 +89,7 @@ export function ServicesHero() {
           <SplitText
             as="h1"
             scrub
-            className="text-[clamp(2.85rem,6.4vw,6.25rem)] font-semibold leading-[0.96] tracking-tight"
+            className="max-w-3xl text-balance text-[clamp(2.85rem,6.4vw,6.25rem)] font-semibold leading-[1.02] tracking-tight"
             text="Services for Nonprofits That Need Donors, Volunteers, Partners, and Community Trust."
           />
 
