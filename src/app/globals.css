@@ -1,0 +1,878 @@
+@import "tailwindcss";
+
+/* ---------- Design tokens (Tailwind v4 CSS-first) ----------
+   The @theme block auto-generates utilities from every `--color-*`:
+     --color-accent      → bg-accent / text-accent / border-accent
+     --color-background  → bg-background / text-background
+     --color-surface     → bg-surface / text-surface
+     --color-muted       → bg-muted / text-muted / border-muted
+     --color-foreground  → bg-foreground / text-foreground
+
+   Light palette lives in @theme (default). Dark palette overrides the
+   same custom properties on [data-theme="dark"] so components using
+   bg-background / text-foreground swap automatically.
+
+   A no-flash inline script in app/layout.js reads localStorage +
+   prefers-color-scheme and sets data-theme on <html> before <body>
+   renders, so there's no theme flicker on first paint. */
+@theme {
+  /* Font stack — `--font-body` and `--font-heading` come from
+     `next/font/google` and are set on <html> in layout.js as CSS
+     variables. Falling back to a native sans-serif stack keeps text
+     readable before the web font finishes loading. */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-heading), "Impact", "Oswald", "Arial Narrow",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* ----- Light theme (default) ------------------------------------
+     Contrast checks (WCAG AA/AAA):
+       foreground #0F0F0F on background #FFFFFF → 20.4:1 (AAA)
+       foreground #0F0F0F on surface    #F0EDE6 → 17.9:1 (AAA)
+       accent     #BF0A30 on background #FFFFFF →  6.5:1 (AA normal, AAA large)
+       accent     #BF0A30 on surface    #F0EDE6 →  5.7:1 (AA normal) */
+  --color-accent: #bf0a30;
+  --color-accent-hover: #a80829;
+  --color-accent-contrast: #ffffff;
+  --color-background: #ffffff;
+  --color-surface: #f0ede6;
+  --color-surface-elevated: #ffffff;
+  --color-muted: #d8d5cc;
+  --color-foreground: #0f0f0f;
+  --color-input: #f7f5ef;
+
+  /* Shadow tokens — subtle in light, deeper in dark */
+  --shadow-card: 0 1px 2px 0 rgba(15, 15, 15, 0.05),
+    0 8px 24px -12px rgba(15, 15, 15, 0.10);
+  --shadow-elevated: 0 10px 40px -16px rgba(15, 15, 15, 0.22);
+}
+
+/* ---------- Dark theme override ----------
+   Warm-toned dark palette designed to feel native to the light theme's
+   cream/crimson identity — the same color story, dialed down for night.
+   Contrast checks (WCAG AA/AAA):
+     foreground #F2EFE8 on background #0C0B09 → 18.6:1 (AAA)
+     foreground #F2EFE8 on surface    #171512 → 16.4:1 (AAA)
+     accent     #EB4B62 on background #0C0B09 →  5.85:1 (AA normal)
+     accent     #EB4B62 on surface    #171512 →  5.20:1 (AA normal) */
+[data-theme="dark"] {
+  --color-accent: #eb4b62;
+  --color-accent-hover: #f76a80;
+  --color-accent-contrast: #0c0b09;
+  --color-background: #0c0b09;
+  --color-surface: #171512;
+  --color-surface-elevated: #1e1c18;
+  --color-muted: #2c2924;
+  --color-foreground: #f2efe8;
+  --color-input: #1a1814;
+
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+    0 12px 32px -12px rgba(0, 0, 0, 0.55);
+  --shadow-elevated: 0 16px 48px -18px rgba(0, 0, 0, 0.7);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+html,
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 260ms ease, color 260ms ease;
+}
+
+html {
+  overflow-x: clip;
+}
+
+/* ---------- Typography defaults ----------
+   Bebas Neue is a condensed, all-caps display face. It only ships in
+   weight 400, so we force that weight globally on headings and drop the
+   letter-spacing/line-height into ranges that read as premium editorial
+   rather than pinched. Any `tracking-tight` / `font-semibold` utility
+   Tailwind applies gets replaced by these values so headings stay
+   balanced across the site.
+
+   `.font-display` and `.font-body` classes are provided so decorative
+   elements can opt back into either face explicitly. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 0.94;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Bebas is condensed and top-heavy — extra breathing room above each
+   heading + a hair more line-height on multi-line H1/H2 keeps them
+   readable at very large clamp sizes. */
+h1 { line-height: 0.92; letter-spacing: 0.015em; }
+h2 { line-height: 0.94; letter-spacing: 0.018em; }
+h3 { line-height: 0.96; letter-spacing: 0.02em; }
+
+.font-body {
+  font-family: var(--font-sans);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.5;
+}
+
+/* Body text-wrap: pretty gives paragraphs a nicer visual rhythm at
+   Space Grotesk's wide counters — orphan control without balance's
+   layout-thrash cost. */
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Component-scoped one-off colors ----------
+   These are NOT global tokens. They stay local to the components
+   that need them so they don't leak into the design system. */
+.horizontal-carousel {
+  --carousel-surface-alt: color-mix(in srgb, var(--color-surface) 92%, var(--color-foreground));
+}
+
+.manifesto-grid {
+  --manifesto-grid-line: color-mix(in srgb, var(--color-foreground) 10%, transparent);
+}
+
+.themed-select {
+  --themed-select-shadow: color-mix(in srgb, var(--color-foreground) 12%, transparent);
+}
+
+/* ---------- Reveal system ----------
+   Baseline visual state so animations control the "in" transition
+   from a known starting point. GSAP overrides these on mount and
+   drives the entrance timelines. */
+
+/* Word masks used by <SplitText />. Each word sits inside a mask
+   whose overflow is clipped so translateY(110%) hides it fully. */
+.rt-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: inherit;
+  /* buffer for descenders so g/y/p don't get clipped when at rest */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.rt-word {
+  display: inline-block;
+  /* Hide via opacity only — a CSS transform baseline confuses GSAP's
+     transform parser (it reads translate3d(0, 110%, 0) and stores y
+     as 17.6px in addition to yPercent, leaving a permanent pixel
+     offset even after yPercent animates to 0). Opacity has none of
+     that ambiguity. GSAP handles the visual translate via yPercent.
+     `will-change` intentionally NOT set here — GSAP applies it during
+     the tween and removes it after; a permanent hint would pin 400+
+     GPU layers on long pages (measured cost on /services). */
+  opacity: 0;
+}
+
+/* Icons default hidden — GSAP fades + scales them in.
+   Same reasoning: no CSS transform baseline, opacity does the hiding.
+   No permanent will-change; GSAP owns it during the tween. */
+.js-reveal-icon {
+  opacity: 0;
+}
+
+/* SVG rect that draws in as the section border.
+   Uses pathLength="1" so we animate strokeDashoffset 1 → 0. */
+.js-section-border {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  will-change: stroke-dashoffset;
+}
+
+/* Fallback: if JS fails to load, reveal states become visible
+   so content is not permanently hidden. */
+.no-js .rt-word,
+.no-js .js-reveal-icon,
+.no-js .js-section-border {
+  opacity: 1;
+  transform: none;
+  stroke-dashoffset: 0;
+}
+
+/* ---------- Premium cursor ----------
+   Hide the native cursor on devices that can hover — the custom
+   Cursor component draws its own. Touch devices keep the native
+   affordance because Cursor.js bails out there. */
+@media (hover: hover) {
+  html,
+  body {
+    cursor: none;
+  }
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [data-cursor] {
+    cursor: none;
+  }
+}
+
+/* ScrollSmoother applies wrapper/content styles at init.
+   No manual scaffolding needed — this preserves the no-JS fallback
+   (native scroll still works if the smoother never initializes). */
+#smooth-content {
+  will-change: transform;
+}
+
+/* Hide horizontal scrollbar on the top-bar overflow row while keeping
+   horizontal scroll functional on narrow viewports. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ================================================================
+   Tactical design language — precision grid, panel seams, star mark,
+   engineered borders. All expressed in the existing red/black/white
+   token palette; nothing else is introduced.
+   ================================================================ */
+
+/* Precision grid overlay. Fine hairlines in foreground/accent alpha.
+   Used as a backdrop for hero-level compositions. Two overlapping
+   patterns (major/minor) simulate an engineering blueprint without
+   dominating the page. */
+.tactical-grid {
+  background-image:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--color-foreground) 6%, transparent) 1px,
+      transparent 1px),
+    linear-gradient(to bottom,
+      color-mix(in srgb, var(--color-foreground) 6%, transparent) 1px,
+      transparent 1px),
+    linear-gradient(to right,
+      color-mix(in srgb, var(--color-foreground) 3%, transparent) 1px,
+      transparent 1px),
+    linear-gradient(to bottom,
+      color-mix(in srgb, var(--color-foreground) 3%, transparent) 1px,
+      transparent 1px);
+  background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+}
+
+/* Same grid but tuned darker + tighter for card interiors. */
+.tactical-grid-panel {
+  background-image:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--color-foreground) 4%, transparent) 1px,
+      transparent 1px),
+    linear-gradient(to bottom,
+      color-mix(in srgb, var(--color-foreground) 4%, transparent) 1px,
+      transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Corner brackets — four L-shaped ticks that frame a rectangular
+   panel, evoking targeting reticles / tactical HUDs. Author places
+   .tac-bracket on each of four spans absolutely positioned at the
+   corners; the modifier classes rotate them into place. */
+.tac-bracket {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-accent);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.tac-bracket-tl { top: 0;    left: 0;    border-top-width: 2px;    border-left-width: 2px; }
+.tac-bracket-tr { top: 0;    right: 0;   border-top-width: 2px;    border-right-width: 2px; }
+.tac-bracket-bl { bottom: 0; left: 0;    border-bottom-width: 2px; border-left-width: 2px; }
+.tac-bracket-br { bottom: 0; right: 0;   border-bottom-width: 2px; border-right-width: 2px; }
+
+/* Horizontal tactical seam — a segmented hairline that reads like a
+   fold line on a mission-briefing document. */
+.tac-seam {
+  --tac-seam-color: color-mix(in srgb, var(--color-foreground) 20%, transparent);
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--tac-seam-color) 0 12px,
+    transparent 12px 20px
+  );
+}
+.tac-seam-accent { --tac-seam-color: var(--color-accent); }
+
+/* Portfolio carousel slide — chamfered image plate with the site's
+   angular-panel corner cuts and a subtle inner hairline. Injected as
+   the `imageClassName` on <DiagonalCarousel /> so it inherits the
+   tactical design language without needing to touch the upstream
+   component. */
+.portfolio-slide-image {
+  border-radius: 0 !important;
+  clip-path: polygon(
+    18px 0,
+    100% 0,
+    100% calc(100% - 18px),
+    calc(100% - 18px) 100%,
+    0 100%,
+    0 18px
+  );
+  box-shadow:
+    0 24px 60px -30px color-mix(in srgb, var(--color-foreground) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-foreground) 12%, transparent) inset;
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+.portfolio-slide-image:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 32px 70px -30px color-mix(in srgb, var(--color-accent) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 45%, transparent) inset;
+}
+
+/* Animated variant of tac-seam — dashes drift smoothly along the line
+   under a GSAP tween on backgroundPositionX. A single-period shift
+   (20px) loops seamlessly. No permanent `will-change` — the sweep
+   hook toggles it via GSAP only while the seam is in the viewport. */
+.tac-seam[data-animate-seam] {
+  background-repeat: repeat-x;
+  background-size: 20px 100%;
+}
+
+/* Chamfered SHIELD frame — 6-point hex-ish outline with tapered top
+   and bottom. Not a Captain America shield; a taller elongated shape
+   inspired by a service badge / mission ID plate. Uses the same
+   ::before-inset pattern as .chamfer so it draws a hairline border. */
+@layer components {
+  .shield-frame {
+    --shield-border: 1px;
+    --shield-border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    --shield-bg: transparent;
+    position: relative;
+    isolation: isolate;
+    background-color: var(--shield-border-color);
+    clip-path: polygon(
+      50% 0,
+      100% 12%,
+      100% 88%,
+      50% 100%,
+      0 88%,
+      0 12%
+    );
+  }
+  .shield-frame::before {
+    content: "";
+    position: absolute;
+    inset: var(--shield-border);
+    background: var(--shield-bg);
+    clip-path: polygon(
+      50% 0,
+      100% 12%,
+      100% 88%,
+      50% 100%,
+      0 88%,
+      0 12%
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Angular panel — rectangle with two corner cuts on opposite ends
+     (top-left + bottom-right by default) so cards read as machined
+     plate rather than generic rounded. */
+  .angular-panel {
+    --ap-cut: 18px;
+    --ap-border: 1px;
+    --ap-border-color: color-mix(in srgb, var(--color-foreground) 14%, transparent);
+    --ap-bg: var(--color-surface);
+    position: relative;
+    isolation: isolate;
+    background-color: var(--ap-border-color);
+    clip-path: polygon(
+      var(--ap-cut) 0,
+      100% 0,
+      100% calc(100% - var(--ap-cut)),
+      calc(100% - var(--ap-cut)) 100%,
+      0 100%,
+      0 var(--ap-cut)
+    );
+  }
+  .angular-panel::before {
+    content: "";
+    position: absolute;
+    inset: var(--ap-border);
+    background: var(--ap-bg);
+    clip-path: polygon(
+      var(--ap-cut) 0,
+      100% 0,
+      100% calc(100% - var(--ap-cut)),
+      calc(100% - var(--ap-cut)) 100%,
+      0 100%,
+      0 var(--ap-cut)
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+  /* Flip cut direction: top-right + bottom-left */
+  .angular-panel-alt { }
+  .angular-panel-alt {
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--ap-cut)) 0,
+      100% var(--ap-cut),
+      100% 100%,
+      var(--ap-cut) 100%,
+      0 calc(100% - var(--ap-cut))
+    );
+  }
+  .angular-panel-alt::before {
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--ap-cut)) 0,
+      100% var(--ap-cut),
+      100% 100%,
+      var(--ap-cut) 100%,
+      0 calc(100% - var(--ap-cut))
+    );
+  }
+
+  /* Animated variant — replaces the outer hairline's solid tint with a
+     rotating conic-gradient so a soft accent arc travels around the
+     chamfered perimeter. The inner ::before still covers all interior
+     pixels, so the sweep is visible only through the 1px border edge.
+     Rotation is driven by a GSAP tween on --panel-sweep-angle (see
+     useBorderSweep hook). Reduced-motion falls back to the static
+     border color. */
+  .angular-panel[data-animate-border] {
+    background: conic-gradient(
+      from var(--panel-sweep-angle, 0deg) at 50% 50%,
+      var(--ap-border-color) 0deg,
+      var(--ap-border-color) 78deg,
+      color-mix(in srgb, var(--color-accent) 85%, transparent) 100deg,
+      var(--ap-border-color) 128deg,
+      var(--ap-border-color) 258deg,
+      color-mix(in srgb, var(--color-accent) 45%, transparent) 280deg,
+      var(--ap-border-color) 308deg,
+      var(--ap-border-color) 360deg
+    );
+    /* No permanent will-change here — the sweep hook toggles it via
+       GSAP only while the panel is in the viewport. Permanent hint
+       pinned dozens of GPU layers site-wide (see /services profile). */
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .angular-panel[data-animate-border] {
+      background: var(--ap-border-color);
+    }
+  }
+}
+
+/* Registered custom property so browsers can interpolate the angle in
+   both CSS transitions and GSAP tweens. Must live at the top level —
+   @property is not permitted inside @layer. */
+@property --panel-sweep-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ================================================================
+   Glow-frame — cinematic rotating accent halo behind cut-corner cards
+   Inspired by aurora-border card patterns, restrained to the accent-
+   red palette and toned down so it reads as ambient stage-light
+   rather than a decorative rainbow. Uses @property to animate the
+   conic-gradient angle (not the whole element) so it stays cheap on
+   the GPU.
+
+   Structure:
+     <div class="glow-frame">
+       <span class="glow-frame__halo" aria-hidden />
+       <div class="angular-panel">...</div>
+     </div>
+
+   The halo sits at negative inset so a soft ring bleeds around the
+   panel. Where the panel's clip-path cuts the corners off, the halo
+   shows through those cuts as an intentional light-leak — this is
+   the cinematic touch that makes it feel native to the design
+   language rather than bolted on.
+
+   Every knob is exposed as a CSS custom property so per-usage tuning
+   happens inline without ever touching this rule. */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes glow-frame-rotate {
+  to { --glow-angle: 360deg; }
+}
+
+/* glow-frame v2 */
+.glow-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.glow-frame__halo {
+  position: absolute;
+  inset: var(--glow-inset, -10px);
+  border-radius: var(--glow-radius, 22px);
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    var(--color-accent) 45deg,
+    transparent 115deg,
+    transparent 225deg,
+    color-mix(in srgb, var(--color-accent) 60%, transparent) 265deg,
+    transparent 330deg,
+    transparent 360deg
+  );
+  filter: blur(var(--glow-blur, 14px));
+  opacity: var(--glow-opacity, 0.30);
+  pointer-events: none;
+  z-index: -1;
+  /* Paused by default — the ambient-anim viewport gate flips the
+     parent to `data-anim-visible` and un-pauses the animation only
+     while the halo is on-screen. Saves continuous conic-gradient
+     repaints on off-screen cards. */
+  animation: glow-frame-rotate var(--glow-duration, 14s) linear infinite paused;
+  transition: opacity 320ms ease;
+}
+.glow-frame[data-anim-visible] .glow-frame__halo {
+  animation-play-state: running;
+}
+
+.glow-frame:hover .glow-frame__halo,
+.glow-frame:focus-within .glow-frame__halo {
+  opacity: var(--glow-opacity-hover, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-frame__halo { animation: none; }
+}
+
+/* Tactical button skin — chamfered pill with a red/black split, a
+   layered "sweep" gradient revealed on hover, and a corner cut on
+   opposite corners for a machined-plate feel. Base + hover variants
+   are pure CSS; the JS layer handles GSAP-driven letter shifts on
+   hover in <TacticalButton />.
+
+   Class stack:
+     .tac-btn                            → base geometry + border
+     .tac-btn-primary                    → red fill, white text
+     .tac-btn-ghost                      → transparent fill, hairline border
+*/
+.tac-btn {
+  --tac-btn-cut: 10px;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.75rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  clip-path: polygon(
+    var(--tac-btn-cut) 0,
+    100% 0,
+    100% calc(100% - var(--tac-btn-cut)),
+    calc(100% - var(--tac-btn-cut)) 100%,
+    0 100%,
+    0 var(--tac-btn-cut)
+  );
+  transition: transform 240ms cubic-bezier(.2,.7,.2,1);
+  will-change: transform;
+}
+@media (min-width: 768px) {
+  .tac-btn { font-size: 12px; padding: 1rem 2rem; }
+}
+.tac-btn::before {
+  /* Sweep highlight — hidden by default, GSAP slides it on hover. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-foreground) 12%, transparent) 45%,
+    color-mix(in srgb, var(--color-foreground) 4%, transparent) 55%,
+    transparent 80%);
+  transform: translateX(-110%);
+  transition: transform 520ms cubic-bezier(.2,.7,.2,1);
+  z-index: -1;
+  pointer-events: none;
+}
+.tac-btn:hover::before,
+.tac-btn:focus-visible::before { transform: translateX(110%); }
+
+.tac-btn-primary {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast, #ffffff);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 22%, transparent),
+    0 6px 20px -8px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+.tac-btn-primary::after {
+  /* Tiny accent notch bottom-left — engineered detail */
+  content: "";
+  position: absolute;
+  left: 6px; bottom: 6px;
+  width: 6px; height: 6px;
+  background: color-mix(in srgb, #ffffff 65%, transparent);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  pointer-events: none;
+}
+.tac-btn-ghost {
+  background: transparent;
+  color: var(--color-foreground);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-foreground) 35%, transparent);
+}
+.tac-btn-ghost:hover,
+.tac-btn-ghost:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--color-foreground);
+}
+
+/* Compact tactical button — used in the floating NavBar pill so the
+   CTA fits the pill height (~48px) while preserving every other
+   .tac-btn detail (chamfered clip-path, sweep highlight, accent notch,
+   GSAP arrow slide, letter-spacing widen on hover). Only size + cut
+   are dialled down. */
+.tac-btn.nav-cta {
+  --tac-btn-cut: 7px;
+  padding: 0.55rem 1.05rem;
+  font-size: 10px;
+  gap: 0.5rem;
+  letter-spacing: 0.22em;
+}
+@media (min-width: 768px) {
+  .tac-btn.nav-cta {
+    padding: 0.6rem 1.25rem;
+    font-size: 11px;
+  }
+}
+
+/* Star mark — 5-point CSS-drawn star used sparingly as a motif in
+   hero + finale. Sized via --star-size, colored via --star-color. */
+.star-mark {
+  --star-size: 96px;
+  --star-color: var(--color-accent);
+  width: var(--star-size);
+  aspect-ratio: 1 / 1;
+  background: var(--star-color);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+.star-mark-ring {
+  /* Ring version — the star acts as a clipped mask on a background
+     gradient so the interior can render as radial highlight. */
+  background: radial-gradient(circle at 50% 40%,
+    color-mix(in srgb, var(--star-color) 90%, transparent) 0%,
+    color-mix(in srgb, var(--star-color) 55%, transparent) 60%,
+    transparent 78%);
+}
+
+/* Cinematic scanline — very subtle horizontal grain, used behind
+   hero to add a filmic texture without becoming decorative noise. */
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    color-mix(in srgb, var(--color-foreground) 3%, transparent) 2px 3px
+  );
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+
+/* ================================================================
+   Flag-inspired subliminal elements. Everything is expressed through
+   the existing red/black/white palette + color-mix; no blue, no
+   literal flag graphic. The user should feel it without seeing it.
+   ================================================================ */
+
+/* Flag-stripe background — 13 evenly-spaced horizontal bands in
+   ultra-low-alpha alternating accent/transparent. Used as a full-
+   bleed backdrop (behind hero + finale) to hint fabric without
+   dominating the composition. Alpha < 4% so it reads as ambient. */
+.flag-stripe-bg {
+  --stripe-alpha: 3.5%;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-accent) var(--stripe-alpha), transparent) 0 8.5%,
+    transparent 8.5% 15.4%
+  );
+}
+
+/* Vertical variant — for sidebars / sticky columns. */
+.flag-stripe-v {
+  --stripe-alpha: 3%;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-accent) var(--stripe-alpha), transparent) 0 6px,
+    transparent 6px 40px
+  );
+}
+
+/* Ribbon glow — soft red halo that sits behind ribbon shapes to
+   simulate premium stage lighting without becoming a color wash. */
+.ribbon-glow {
+  filter: drop-shadow(0 6px 24px color-mix(in srgb, var(--color-accent) 32%, transparent));
+}
+
+/* Diagonal fold — a chamfered corner cut that reads as a folded
+   fabric edge. Applied to secondary panels for a fabric-crease feel. */
+.fabric-fold {
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% calc(100% - 40px),
+    calc(100% - 40px) 100%,
+    0 100%
+  );
+}
+
+/* Ribbon path animation — subtle continuous shift so the SVG paths
+   read as "breathing" fabric. Bind to the containing element (not
+   the path itself so we don't fight GSAP's transform parser). */
+@keyframes ribbon-drift {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(-6px, 3px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+.ribbon-drift {
+  animation: ribbon-drift 14s ease-in-out infinite;
+  will-change: transform;
+}
+.ribbon-drift-slow {
+  animation: ribbon-drift 22s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-drift,
+  .ribbon-drift-slow { animation: none; }
+}
+
+/* Marquee edge-fade masks — applied to the outer container so the
+   moving chips fade cleanly at the edges. */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 6%,
+    black 94%,
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 6%,
+    black 94%,
+    transparent 100%
+  );
+}
+
+/* Cinematic lighting sweep — used behind hero and finale. A single
+   accent-red conic-highlight that fades to transparent, positioned
+   absolutely by the caller. Not a background wash — occupies a
+   defined corner. */
+.stage-light {
+  background: radial-gradient(
+    ellipse at var(--stage-x, 30%) var(--stage-y, 40%),
+    color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 4%, transparent) 30%,
+    transparent 60%
+  );
+}
+
+/* During a theme swap, freeze *user-triggered* transitions so the
+   large body-color transition doesn't fight with tiny local hover
+   transitions and produce a jitter. GSAP tweens are unaffected. */
+.theme-swapping *,
+.theme-swapping *::before,
+.theme-swapping *::after {
+  transition: background-color 260ms ease, color 260ms ease,
+    border-color 260ms ease, fill 260ms ease, stroke 260ms ease,
+    box-shadow 260ms ease !important;
+  transition-delay: 0s !important;
+}
+
+/* Chamfered-corner utility — 8-point polygon clip that traces a
+   hairline border via the element's own background, then paints the
+   interior via ::before. Wrapped in @layer components so callers can
+   still stack Tailwind positioning utilities on top. */
+@layer components {
+  .chamfer {
+    --chamfer-size: 10px;
+    --chamfer-border: 1px;
+    --chamfer-border-color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+    --chamfer-bg: transparent;
+
+    position: relative;
+    isolation: isolate;
+    background-color: var(--chamfer-border-color);
+    clip-path: polygon(
+      var(--chamfer-size) 0,
+      calc(100% - var(--chamfer-size)) 0,
+      100% var(--chamfer-size),
+      100% calc(100% - var(--chamfer-size)),
+      calc(100% - var(--chamfer-size)) 100%,
+      var(--chamfer-size) 100%,
+      0 calc(100% - var(--chamfer-size)),
+      0 var(--chamfer-size)
+    );
+  }
+
+  .chamfer::before {
+    content: "";
+    position: absolute;
+    inset: var(--chamfer-border);
+    background: var(--chamfer-bg);
+    clip-path: polygon(
+      var(--chamfer-size) 0,
+      calc(100% - var(--chamfer-size)) 0,
+      100% var(--chamfer-size),
+      100% calc(100% - var(--chamfer-size)),
+      calc(100% - var(--chamfer-size)) 100%,
+      var(--chamfer-size) 100%,
+      0 calc(100% - var(--chamfer-size)),
+      0 var(--chamfer-size)
+    );
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .chamfer-xs { --chamfer-size: 4px; }
+}
