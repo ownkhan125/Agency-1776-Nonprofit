@@ -91,7 +91,11 @@
       "Bash(node run.js /tmp/verify-stars2.js)",
       "Bash(node run.js /tmp/verify-style.js)",
       "Bash(node run.js /tmp/verify-hero.js)",
-      "Bash(node run.js /tmp/playwright-theme-swap.js)"
+      "Bash(node run.js /tmp/playwright-theme-swap.js)",
+      "Bash(node run.js /tmp/playwright-test-probe.js)",
+      "Bash(PORT=3002 npm run dev)",
+      "Bash(node run.js /tmp/playwright-test-topbar-lock.js)",
+      "Bash(node run.js /tmp/playwright-test-404check.js)"
     ]
   }
 }

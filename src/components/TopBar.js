@@ -10,6 +10,20 @@ const TABS = [
   { id: "nonprofit",   label: "Nonprofit",                 active: true,  href: null },
 ];
 
+// Locked palette — the top bar reads as a constant branded strip and
+// must not respond to Light/Dark theme swaps. Every color that used to
+// pull from a `--color-*` token is pinned to a literal value here so
+// theme changes on <html data-theme> leave the strip untouched.
+const TOPBAR_BG          = "#0c0b09";
+const TOPBAR_BORDER      = "rgba(242, 239, 232, 0.14)";
+const TOPBAR_FG          = "#f2efe8";
+const TOPBAR_FG_DIM      = "rgba(242, 239, 232, 0.55)";
+const TOPBAR_FG_FAINT    = "rgba(242, 239, 232, 0.30)";
+const TOPBAR_FG_INACTIVE = "rgba(242, 239, 232, 0.45)";
+const TOPBAR_ACCENT      = "#eb4b62";
+const TOPBAR_ACCENT_BORDER = "rgba(235, 75, 98, 0.60)";
+const TOPBAR_ACCENT_BG     = "rgba(235, 75, 98, 0.06)";
+
 export default function TopBar() {
   const scopeRef = useRef(null);
 
@@ -20,8 +34,8 @@ export default function TopBar() {
     const ctx = gsap.context(() => {
       const inactive = scope.querySelectorAll("[data-topbar-tab='inactive']");
       inactive.forEach((el) => {
-        const hoverIn  = () => gsap.to(el, { color: "var(--color-foreground)", duration: 0.35, ease: "power2.out" });
-        const hoverOut = () => gsap.to(el, { color: "color-mix(in srgb, var(--color-foreground) 45%, transparent)", duration: 0.35, ease: "power2.out" });
+        const hoverIn  = () => gsap.to(el, { color: TOPBAR_FG, duration: 0.35, ease: "power2.out" });
+        const hoverOut = () => gsap.to(el, { color: TOPBAR_FG_INACTIVE, duration: 0.35, ease: "power2.out" });
         el.addEventListener("mouseenter", hoverIn);
         el.addEventListener("mouseleave", hoverOut);
       });
@@ -33,7 +47,12 @@ export default function TopBar() {
     <div
       ref={scopeRef}
       data-cursor="link"
-      className="fixed inset-x-0 top-0 z-[60] border-b border-muted/40 bg-background/95 backdrop-blur-md"
+      className="fixed inset-x-0 top-0 z-[60] backdrop-blur-md"
+      style={{
+        backgroundColor: TOPBAR_BG,
+        borderBottom: `1px solid ${TOPBAR_BORDER}`,
+        color: TOPBAR_FG,
+      }}
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-2 px-2 py-1.5 sm:gap-4 sm:px-4 sm:py-2 md:px-12">
         <div className="flex min-w-0 flex-1 items-center gap-0 overflow-x-auto no-scrollbar sm:gap-2 lg:flex-none lg:gap-4">
@@ -42,12 +61,18 @@ export default function TopBar() {
           ))}
         </div>
 
-        <div className="hidden shrink-0 items-center gap-4 whitespace-nowrap text-[10px] uppercase tracking-[0.28em] text-foreground/50 lg:flex">
+        <div
+          className="hidden shrink-0 items-center gap-4 whitespace-nowrap text-[10px] uppercase tracking-[0.28em] lg:flex"
+          style={{ color: TOPBAR_FG_DIM }}
+        >
           <span className="inline-flex items-center gap-2">
-            <span className="inline-block h-1 w-1 rounded-full bg-accent" />
+            <span
+              className="inline-block h-1 w-1 rounded-full"
+              style={{ backgroundColor: TOPBAR_ACCENT }}
+            />
             Nonprofit Division
           </span>
-          <span className="text-foreground/30">/</span>
+          <span style={{ color: TOPBAR_FG_FAINT }}>/</span>
           <span>Est. MMXXIV</span>
         </div>
       </div>
@@ -69,11 +94,10 @@ function TopBarTab({ tab }) {
       role={tab.href ? undefined : "presentation"}
       className={cn(
         "relative inline-flex select-none items-center whitespace-nowrap px-2 py-1.5 text-[9px] uppercase tracking-[0.22em] transition-opacity sm:px-3 sm:py-2 sm:text-[10px] sm:tracking-[0.28em] md:px-5 md:text-[11px]",
-        isActive
-          ? "text-accent"
-          : "cursor-not-allowed text-foreground/45 hover:text-foreground",
+        !isActive && "cursor-not-allowed",
         tab.href ? "cursor-pointer" : ""
       )}
+      style={{ color: isActive ? TOPBAR_ACCENT : TOPBAR_FG_INACTIVE }}
       title={isActive ? undefined : "Coming soon"}
     >
       {isActive && (
@@ -81,9 +105,8 @@ function TopBarTab({ tab }) {
           aria-hidden
           className="chamfer chamfer-xs absolute inset-y-1 left-0 right-0 -z-0"
           style={{
-            "--chamfer-border-color":
-              "color-mix(in srgb, var(--color-accent) 60%, transparent)",
-            "--chamfer-bg": "color-mix(in srgb, var(--color-accent) 6%, transparent)",
+            "--chamfer-border-color": TOPBAR_ACCENT_BORDER,
+            "--chamfer-bg": TOPBAR_ACCENT_BG,
           }}
         />
       )}
