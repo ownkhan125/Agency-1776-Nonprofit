@@ -5,9 +5,9 @@ import { gsap, registerGsap } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 const TABS = [
-  { id: "business",    label: "Business",                  active: false, href: null },
-  { id: "politicians", label: "Politicians or Candidates", active: false, href: null },
-  { id: "nonprofit",   label: "Nonprofit",                 active: true,  href: null },
+  { id: "business",    label: "Business",                  active: false, href: "https://agency-1776-business.vercel.app/" },
+  { id: "politicians", label: "Politicians or Candidates", active: false, href: "https://agency-1776-politicians-or-candidat.vercel.app/" },
+  { id: "nonprofit",   label: "Nonprofit",                 active: true,  href: "https://agency-1776-nonprofit.vercel.app/" },
 ];
 
 // Locked palette — the top bar reads as a constant branded strip and
@@ -94,11 +94,10 @@ function TopBarTab({ tab }) {
       role={tab.href ? undefined : "presentation"}
       className={cn(
         "relative inline-flex select-none items-center whitespace-nowrap px-2 py-1.5 text-[9px] uppercase tracking-[0.22em] transition-opacity sm:px-3 sm:py-2 sm:text-[10px] sm:tracking-[0.28em] md:px-5 md:text-[11px]",
-        !isActive && "cursor-not-allowed",
-        tab.href ? "cursor-pointer" : ""
+        tab.href ? "cursor-pointer" : "cursor-not-allowed"
       )}
       style={{ color: isActive ? TOPBAR_ACCENT : TOPBAR_FG_INACTIVE }}
-      title={isActive ? undefined : "Coming soon"}
+      title={isActive || tab.href ? undefined : "Coming soon"}
     >
       {isActive && (
         <span
