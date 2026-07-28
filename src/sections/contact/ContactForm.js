@@ -58,6 +58,10 @@ const BRANDING = [
 
 const DONATION_PLATFORM = ["Yes", "Partially", "No", "Not sure"];
 
+const GHL_WEBHOOK_URL =
+  "https://services.leadconnectorhq.com/hooks/8TREyhjak2hmHw12ESeq/webhook-trigger/pA71jqUh6XBL5zdivsmw";
+const GHL_LOCATION_ID = "8TREyhjak2hmHw12ESeq";
+
 /**
  * Reusable field wrapper with the site's tactical language.
  * Renders label above the control; the control itself is a chamfered
@@ -103,12 +107,52 @@ const chamferClip = {
 export function ContactForm() {
   const [status, setStatus] = useState("idle");
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // No backend endpoint in scope — this handler exists so the form
-    // is functional and doesn't full-page-reload. In production wire
-    // to the /api/contact route.
-    setStatus("submitted");
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    const fullName = (data.get("fullName") || "").toString().trim();
+    const [firstName, ...restName] = fullName.split(/\s+/);
+    const lastName = restName.join(" ");
+
+    const payload = {
+      locationId: GHL_LOCATION_ID,
+      full_name: fullName,
+      first_name: firstName || "",
+      last_name: lastName || "",
+      email: (data.get("email") || "").toString().trim(),
+      phone: (data.get("phone") || "").toString().trim(),
+      organization_name: (data.get("organizationName") || "").toString().trim(),
+      organization_type: (data.get("organizationType") || "").toString(),
+      need: (data.get("need") || "").toString(),
+      goal: (data.get("goal") || "").toString(),
+      branding: (data.get("branding") || "").toString(),
+      donation_platform: (data.get("donationPlatform") || "").toString(),
+      message: (data.get("message") || "").toString().trim(),
+      source: "Agency 1776 Nonprofit — Contact Form",
+      submitted_at: new Date().toISOString(),
+      page_url:
+        typeof window !== "undefined" ? window.location.href : "",
+    };
+
+    setStatus("submitting");
+
+    try {
+      const res = await fetch(GHL_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+
+      setStatus("submitted");
+      form.reset();
+    } catch (err) {
+      console.error("Contact form submission failed:", err);
+      setStatus("error");
+    }
   };
 
   return (
@@ -315,11 +359,14 @@ export function ContactForm() {
             <div className="md:col-span-2 mt-2 flex flex-col items-start gap-4">
               <button
                 type="submit"
-                className="tac-btn tac-btn-primary"
+                disabled={status === "submitting"}
+                className="tac-btn tac-btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
                 data-cursor="button"
               >
                 <span className="relative z-10 inline-block">
-                  Send Nonprofit Inquiry
+                  {status === "submitting"
+                    ? "Sending…"
+                    : "Send Nonprofit Inquiry"}
                 </span>
                 <span
                   aria-hidden="true"
@@ -334,6 +381,14 @@ export function ContactForm() {
                   className="text-[11px] uppercase tracking-[0.28em] text-accent"
                 >
                   Inquiry received — we'll be in touch.
+                </p>
+              )}
+              {status === "error" && (
+                <p
+                  role="status"
+                  className="text-[11px] uppercase tracking-[0.28em] text-red-500"
+                >
+                  Submission failed — please try again or email us directly.
                 </p>
               )}
             </div>
