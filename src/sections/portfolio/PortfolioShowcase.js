@@ -15,9 +15,10 @@ import { cn } from "@/utils/cn";
  */
 const PROJECTS = [
   {
-    title: "Community Food Bank",
-    categories: ["Website", "Donation Path", "Volunteer"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-01/1400/1000",
+    title: "Parents United",
+    categories: ["Website", "Community", "Resources"],
+    src: "/portfolio/parents-united.png",
+    href: "https://parents-united.vercel.app",
   },
   {
     title: "Youth Mentorship Alliance",
@@ -262,9 +263,14 @@ export function PortfolioShowcase() {
                       }
                     : undefined
                 }
-                onClick={() => setActive(i)}
+                onClick={() => {
+                  setActive(i);
+                  if (p.href)
+                    window.open(p.href, "_blank", "noopener,noreferrer");
+                }}
                 className={cn(
                   "group relative border-b border-foreground/10 py-14 transition-opacity duration-400",
+                  p.href && "cursor-pointer",
                   hoveringRow && !isActive && "opacity-45"
                 )}
               >
@@ -360,8 +366,13 @@ export function PortfolioShowcase() {
  * editorial stack.
  */
 function ProjectCard({ project, index }) {
+  const Wrapper = project.href ? "a" : "article";
+  const wrapperProps = project.href
+    ? { href: project.href, target: "_blank", rel: "noopener noreferrer" }
+    : {};
   return (
-    <article
+    <Wrapper
+      {...wrapperProps}
       data-portfolio-card
       data-cursor="card"
       className="group flex flex-col gap-6"
@@ -398,7 +409,7 @@ function ProjectCard({ project, index }) {
           {project.categories.join(" · ")}
         </span>
       </div>
-    </article>
+    </Wrapper>
   );
 }
 
