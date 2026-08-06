@@ -1,4 +1,3 @@
-import { Cursor } from "@/components/Cursor";
 import TopBar from "@/components/TopBar";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
@@ -14,7 +13,6 @@ import { FinalCTA } from "@/sections/FinalCTA";
 export default function Home() {
   return (
     <div className="bg-background text-foreground">
-      <Cursor />
       <TopBar />
       <NavBar />
       <SmoothScrollProvider>

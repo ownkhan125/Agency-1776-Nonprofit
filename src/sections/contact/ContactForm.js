@@ -70,6 +70,32 @@ const MONTHLY_SUPPORT = [
 
 const GHL_LOCATION_ID = "8TREyhjak2hmHw12ESeq";
 
+// ── Phone helpers ─────────────────────────────────────────────────────
+// US numbers only (the org is US-based). We format as the user types and
+// hard-cap the significant digits so junk like "123123123213..." can't be
+// entered, and an incomplete number is caught on submit.
+
+// Strip to digits, dropping an optional leading "1" country code, capped
+// at 10 significant digits.
+function phoneDigits(value) {
+  let d = (value || "").replace(/\D/g, "");
+  if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
+  return d.slice(0, 10);
+}
+
+// Progressive display formatting → "(XXX) XXX-XXXX".
+function formatUsPhone(value) {
+  const d = phoneDigits(value);
+  if (d.length < 4) return d;
+  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+// A complete US number has exactly 10 significant digits.
+function isCompleteUsPhone(value) {
+  return phoneDigits(value).length === 10;
+}
+
 /**
  * Reusable field wrapper with the site's tactical language.
  * Renders label above the control; the control itself is a chamfered
@@ -82,7 +108,7 @@ function Field({ label, htmlFor, children, span = 1 }) {
     <div className={cn("flex flex-col gap-2", span === 2 && "md:col-span-2")}>
       <label
         htmlFor={htmlFor}
-        className="text-[10px] uppercase tracking-[0.28em] text-foreground/60"
+        className="text-[11px] font-medium uppercase tracking-[0.28em] text-foreground/70"
       >
         {label}
       </label>
@@ -92,7 +118,7 @@ function Field({ label, htmlFor, children, span = 1 }) {
 }
 
 const controlBase =
-  "w-full appearance-none border border-foreground/15 bg-[color:var(--color-input)] px-4 py-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-foreground/40 focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-accent)_18%,transparent)]";
+  "w-full appearance-none border border-foreground/15 bg-[color:var(--color-input)] px-4 py-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-foreground/40 focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-accent)_18%,transparent)] md:text-base";
 
 // Chamfered clip so inputs pick up the same cut-corner language as the
 // angular-panel plates used elsewhere on the site.
@@ -115,14 +141,30 @@ const chamferClip = {
 export function ContactForm() {
   const [status, setStatus] = useState("idle");
   // Phone is tracked so the SMS opt-in checkboxes stay disabled until a
-  // number is present — TCPA-style: no consent without a target number.
+  // COMPLETE number is present — TCPA-style: no consent without a valid
+  // target number. `phoneError` surfaces incomplete-number validation.
   const [phone, setPhone] = useState("");
-  const smsEnabled = phone.trim().length > 0;
+  const [phoneError, setPhoneError] = useState("");
+  const smsEnabled = isCompleteUsPhone(phone);
+
+  const onPhoneChange = (e) => {
+    setPhone(formatUsPhone(e.target.value));
+    if (phoneError) setPhoneError("");
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
+
+    // Phone is optional, but if one is entered it must be complete.
+    const digits = phoneDigits(phone);
+    if (digits.length > 0 && digits.length !== 10) {
+      setPhoneError("Enter a complete 10-digit US phone number.");
+      form.querySelector("#phone")?.focus();
+      return;
+    }
+    setPhoneError("");
 
     const fullName = (data.get("fullName") || "").toString().trim();
     const [firstName, ...restName] = fullName.split(/\s+/);
@@ -134,7 +176,7 @@ export function ContactForm() {
       first_name: firstName || "",
       last_name: lastName || "",
       email: (data.get("email") || "").toString().trim(),
-      phone: (data.get("phone") || "").toString().trim(),
+      phone: digits ? `+1${digits}` : "",
       organization_name: (data.get("organizationName") || "").toString().trim(),
       organization_type: (data.get("organizationType") || "").toString(),
       need: (data.get("need") || "").toString(),
@@ -183,7 +225,11 @@ export function ContactForm() {
       revealMode="once"
       innerClassName="relative mx-auto max-w-[1600px] px-6 py-20 md:px-10 md:py-28"
     >
-      <TacticalDivider label="Doctrine 02 · Contact" className="mb-14 md:mb-20" />
+      <TacticalDivider
+        label="Doctrine 02 · Contact"
+        labelClassName="text-[11px] font-medium"
+        className="mb-14 md:mb-20"
+      />
 
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-20">
         <div className="max-w-xl">
@@ -250,12 +296,30 @@ export function ContactForm() {
                 id="phone"
                 name="phone"
                 type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                maxLength={14}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your phone number"
-                className={controlBase}
+                onChange={onPhoneChange}
+                placeholder="(555) 123-4567"
+                aria-invalid={phoneError ? "true" : undefined}
+                aria-describedby={phoneError ? "phone-error" : undefined}
+                className={cn(
+                  controlBase,
+                  phoneError &&
+                    "border-red-500 focus:border-red-500 focus:shadow-[0_0_0_3px_color-mix(in_srgb,#ef4444_18%,transparent)]"
+                )}
                 style={chamferClip}
               />
+              {phoneError && (
+                <p
+                  id="phone-error"
+                  role="alert"
+                  className="text-xs leading-relaxed text-red-500"
+                >
+                  {phoneError}
+                </p>
+              )}
             </Field>
 
             <Field label="Organization Name" htmlFor="org-name">
@@ -405,7 +469,7 @@ export function ContactForm() {
                 SMS preferences
               </span>
               {!smsEnabled && (
-                <p className="text-sm leading-relaxed text-foreground/45">
+                <p className="text-sm leading-relaxed text-foreground/45 md:text-base">
                   Enter a phone number above to opt in to SMS messages.
                 </p>
               )}
@@ -418,7 +482,7 @@ export function ContactForm() {
                 <label
                   data-cursor={smsEnabled ? undefined : "disabled"}
                   className={cn(
-                    "flex items-start gap-3 text-sm leading-relaxed text-foreground/70",
+                    "flex items-start gap-3 text-[15px] font-medium leading-relaxed text-foreground/80 md:text-base",
                     !smsEnabled && "cursor-not-allowed"
                   )}
                 >
@@ -430,7 +494,7 @@ export function ContactForm() {
                   />
                   <span>
                     I agree to receive account and project-related text messages
-                    from Agency 1776 Nonprofit at the number provided. Message
+                    from Agency 1776 at the number provided. Message
                     frequency varies. Msg &amp; data rates may apply. Reply STOP
                     to opt out, HELP for help.
                   </span>
@@ -438,7 +502,7 @@ export function ContactForm() {
                 <label
                   data-cursor={smsEnabled ? undefined : "disabled"}
                   className={cn(
-                    "flex items-start gap-3 text-sm leading-relaxed text-foreground/70",
+                    "flex items-start gap-3 text-[15px] font-medium leading-relaxed text-foreground/80 md:text-base",
                     !smsEnabled && "cursor-not-allowed"
                   )}
                 >
@@ -450,7 +514,7 @@ export function ContactForm() {
                   />
                   <span>
                     I agree to receive occasional promotional and marketing text
-                    messages from Agency 1776 Nonprofit. Message frequency
+                    messages from Agency 1776. Message frequency
                     varies. Msg &amp; data rates may apply. Reply STOP to opt
                     out, HELP for help.
                   </span>

@@ -12,12 +12,18 @@ import { NextResponse } from "next/server";
 const GHL_API = "https://services.leadconnectorhq.com";
 const TOKEN = process.env.GHL_TOKEN;
 const LOCATION_ID = process.env.GHL_LOCATION_ID;
-// Workflow webhook trigger for this location. Baked in as a default (env
-// overrides) so the SMS/consent automation fires even without .env config —
-// same pattern as the Randall Fryer site. Location hook 8TREyhjak2hmHw12ESeq
-// matches GHL_LOCATION_ID for this account.
-const MAIN_WEBHOOK_URL =
+// Two workflow webhook triggers for this location, fanned out on every
+// submit (same pattern as the other Agency 1776 sites). Both are baked in
+// as defaults (env overrides) so the form works without .env config. The
+// contact webhook drives the primary contact/automation workflow; the SMS
+// webhook drives the consent/opt-in workflow. Both receive the identical
+// payload. Location hook 8TREyhjak2hmHw12ESeq matches GHL_LOCATION_ID.
+const CONTACT_WEBHOOK_URL =
   process.env.GHL_MAIN_WEBHOOK_URL ||
+  "https://services.leadconnectorhq.com/hooks/8TREyhjak2hmHw12ESeq/webhook-trigger/pA71jqUh6XBL5zdivsmw";
+
+const SMS_WEBHOOK_URL =
+  process.env.GHL_SMS_WEBHOOK_URL ||
   "https://services.leadconnectorhq.com/hooks/8TREyhjak2hmHw12ESeq/webhook-trigger/RtibjvVl4DWD6JYxTlqO";
 
 // Custom field IDs (verified/created via the GHL API for this location).
@@ -52,28 +58,43 @@ export async function POST(req) {
     str(body.sms_marketing_consent).toLowerCase() === "yes";
   const smsAllowed = accountConsent || marketingConsent;
 
-  // ── Primary path: fire the workflow webhook ─────────────────────────
-  // The GHL workflow behind MAIN_WEBHOOK_URL creates/updates the contact
-  // and drives the SMS consent + automation from the payload fields, so
-  // this alone makes the form fully functional — no API token required
-  // (same model as the Randall Fryer site). Must succeed for a 200.
+  // ── Primary path: fire the workflow webhook(s) ──────────────────────
+  // The contact webhook fires on EVERY submit — its GHL workflow creates/
+  // updates the contact and drives base automation from the payload.
+  //
+  // The SMS opt-in webhook fires ONLY when the user actually consented.
+  // Its workflow applies the "sms optin" tag and opt-in state, so firing
+  // it unconditionally tagged every contact as opted-in even when no box
+  // was checked (the reported bug). Gating it on `smsAllowed` is the fix.
+  //
+  // Per-URL `.catch` so one dead webhook can't block the other. At least
+  // one must succeed for a 200.
+  const webhookUrls = [
+    CONTACT_WEBHOOK_URL,
+    smsAllowed ? SMS_WEBHOOK_URL : null,
+  ].filter(Boolean);
+
   let webhookOk = false;
-  if (MAIN_WEBHOOK_URL) {
-    try {
-      const hookRes = await fetch(MAIN_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      webhookOk = hookRes.ok;
-      if (!hookRes.ok) {
-        console.error("Main webhook forward failed:", hookRes.status);
-      }
-    } catch (err) {
-      console.error("Main webhook forward error:", err?.message);
+  if (webhookUrls.length > 0) {
+    const results = await Promise.all(
+      webhookUrls.map((url) =>
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }).catch((err) => {
+          console.error("Webhook forward error:", err?.message);
+          return { ok: false };
+        })
+      )
+    );
+    // Partial failure still succeeds — one live workflow is enough.
+    webhookOk = results.some((r) => r.ok);
+    if (!webhookOk) {
+      console.error("All webhook forwards failed.");
     }
   } else {
-    console.error("MAIN_WEBHOOK_URL not configured.");
+    console.error("No webhook URLs configured.");
   }
 
   // ── Best-effort: upsert the contact via the GHL REST API ────────────

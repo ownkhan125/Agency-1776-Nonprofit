@@ -19,7 +19,11 @@ import { TacticalDivider } from "@/components/TacticalDivider";
  * @param {string}   props.title     page H1
  * @param {string}   props.updated   "Last updated" date string
  * @param {string[]} props.intro     intro paragraphs (below the title)
- * @param {Array<{heading:string, body?:string[], list?:string[]}>} props.sections
+ * @param {Array<{heading:string, body?:React.ReactNode[], list?:React.ReactNode[], content?:Array<{type:"p"|"list", text?:React.ReactNode, items?:React.ReactNode[]}>}>} props.sections
+ *
+ * A section may use `body`/`list` for simple text, or `content` — an ordered
+ * list of blocks — when paragraphs and lists need to interleave. Any text
+ * value may be a React node, so inline links render inside a paragraph.
  */
 export function LegalDocument({ eyebrow, title, updated, intro = [], sections = [] }) {
   return (
@@ -123,6 +127,31 @@ export function LegalDocument({ eyebrow, title, updated, intro = [], sections = 
                     ))}
                   </ul>
                 ) : null}
+                {(s.content || []).map((block, j) =>
+                  block.type === "list" ? (
+                    <ul
+                      key={j}
+                      className="flex flex-col gap-2.5 pl-1 text-base leading-relaxed text-foreground/75"
+                    >
+                      {block.items.map((item, k) => (
+                        <li key={k} className="flex items-start gap-3">
+                          <span
+                            aria-hidden="true"
+                            className="mt-2.5 inline-block h-1 w-1 shrink-0 rotate-45 bg-accent"
+                          />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p
+                      key={j}
+                      className="text-base leading-relaxed text-foreground/75"
+                    >
+                      {block.text}
+                    </p>
+                  )
+                )}
               </section>
             ))}
           </div>

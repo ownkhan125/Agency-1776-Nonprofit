@@ -111,7 +111,11 @@ export function BuildFinderCTA() {
           />
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <TacticalButton href="/contact" variant="primary">
+            <TacticalButton
+              href="/contact"
+              variant="primary"
+              className="tac-btn-lg"
+            >
               Contact Us
             </TacticalButton>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { StarMark } from "@/components/StarMark";
@@ -209,7 +209,7 @@ const BUILDS = [
 // ── Shared control styling (mirrors the contact form) ─────────────────
 
 const controlBase =
-  "w-full appearance-none border border-foreground/15 bg-[color:var(--color-input)] px-4 py-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-accent)_18%,transparent)]";
+  "w-full appearance-none border border-foreground/15 bg-[color:var(--color-input)] px-4 py-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-accent)_18%,transparent)] md:text-base";
 
 const chamferClip = {
   clipPath:
@@ -221,7 +221,7 @@ function SelectField({ label, id, name, options }) {
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="text-[10px] uppercase tracking-[0.28em] text-foreground/60"
+        className="text-[11px] font-semibold uppercase tracking-[0.28em] text-foreground/60"
       >
         {label}
       </label>
@@ -269,6 +269,31 @@ export function BuildFinderExperience() {
   const [error, setError] = useState(false);
   const formRef = useRef(null);
 
+  // Equalize the title+description block height across the three build
+  // cards so the divider and bullet list below it line up — at any column
+  // width. A fixed CSS min-height can't do this because line counts shift
+  // with the column width; measuring keeps them aligned on every resize.
+  const blockRefs = useRef([]);
+  useEffect(() => {
+    const equalize = () => {
+      const els = blockRefs.current.filter(Boolean);
+      if (els.length < 2) return;
+      els.forEach((el) => (el.style.minHeight = "0px"));
+      const max = Math.max(...els.map((el) => el.offsetHeight));
+      els.forEach((el) => (el.style.minHeight = `${max}px`));
+    };
+    equalize();
+    const container = blockRefs.current.find(Boolean)?.closest("ul");
+    const ro =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(equalize) : null;
+    if (ro && container) ro.observe(container);
+    // Web fonts can change line counts after first paint — re-run then.
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(equalize).catch(() => {});
+    }
+    return () => ro?.disconnect();
+  }, []);
+
   const recommendedBuild = recommendation
     ? BUILDS.find((b) => b.key === recommendation)
     : null;
@@ -314,6 +339,7 @@ export function BuildFinderExperience() {
         >
           <TacticalDivider
             label="Doctrine 02 · Build Finder"
+            labelClassName="text-[11px] font-medium"
             className="mb-14 md:mb-20"
           />
 
@@ -321,7 +347,7 @@ export function BuildFinderExperience() {
             <div className="max-w-xl">
               <SplitText
                 as="p"
-                className="mb-5 text-[10px] uppercase tracking-[0.32em] text-accent"
+                className="mb-5 text-[11px] font-medium uppercase tracking-[0.32em] text-accent"
                 text="Monthly support for the mission"
               />
               <SplitText
@@ -388,7 +414,7 @@ export function BuildFinderExperience() {
                   />
                 </div>
 
-                <p className="md:col-span-2 mt-1 text-sm leading-relaxed text-foreground/65">
+                <p className="md:col-span-2 mt-1 text-sm font-medium leading-relaxed text-foreground/65 md:text-base">
                   Based on your organization type, goals, donation setup,
                   support needs, and monthly support range, Agency 1776 will
                   recommend the nonprofit build and support path that best fits
@@ -426,7 +452,7 @@ export function BuildFinderExperience() {
                       type="button"
                       onClick={scrollToResults}
                       data-cursor="link"
-                      className="group inline-flex items-center gap-2 text-left text-[11px] uppercase tracking-[0.24em] text-accent"
+                      className="group inline-flex items-center gap-2 text-left text-[11px] font-medium uppercase tracking-[0.24em] text-accent"
                     >
                       <StarMark className="h-3.5 w-3.5 text-accent" />
                       <span>
@@ -475,7 +501,7 @@ export function BuildFinderExperience() {
             className="grid gap-6 md:grid-cols-3 md:items-start lg:gap-8"
             style={{ perspective: "1200px" }}
           >
-            {BUILDS.map((b) => {
+            {BUILDS.map((b, i) => {
               const isRecommended = b.key === recommendation;
               return (
                 <li key={b.key} data-cursor="card" className="relative flex">
@@ -521,15 +547,23 @@ export function BuildFinderExperience() {
                         </span>
                       )}
 
-                      <SplitText
-                        as="h3"
-                        className="text-2xl font-semibold leading-tight tracking-tight md:text-[1.7rem]"
-                        text={b.title}
-                      />
-
-                      <p className="text-sm leading-relaxed text-foreground/75">
-                        {b.best}
-                      </p>
+                      {/* Title + description are one measured block; its
+                          height is equalized across the three cards in JS so
+                          the divider below always aligns (see equalize
+                          effect). Bigger body copy per the brief. */}
+                      <div
+                        ref={(el) => (blockRefs.current[i] = el)}
+                        className="flex flex-col gap-6"
+                      >
+                        <SplitText
+                          as="h3"
+                          className="text-2xl font-semibold leading-tight tracking-tight md:text-[1.7rem]"
+                          text={b.title}
+                        />
+                        <p className="text-[15px] leading-relaxed text-foreground/75 md:text-base">
+                          {b.best}
+                        </p>
+                      </div>
 
                       <div data-animate-seam className="tac-seam" />
 
@@ -537,7 +571,7 @@ export function BuildFinderExperience() {
                         <span className="text-[10px] uppercase tracking-[0.28em] text-foreground/45">
                           Recommended for
                         </span>
-                        <ul className="flex flex-col gap-2.5 text-sm leading-snug text-foreground/80">
+                        <ul className="flex flex-col gap-2.5 text-[15px] leading-relaxed text-foreground/80 md:text-base">
                           {b.recommendedFor.map((item) => (
                             <li
                               key={item}

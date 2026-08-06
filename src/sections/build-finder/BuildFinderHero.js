@@ -57,7 +57,7 @@ export function BuildFinderHero() {
       />
 
       <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center text-center">
-        <div className="mb-8 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-foreground/60 md:text-xs">
+        <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.32em] text-foreground/60 md:text-[13px]">
           <StarMark className="h-3 w-3 text-accent" />
           <span>Build Finder · Agency 1776</span>
           <span className="text-foreground/25">/</span>
@@ -78,7 +78,11 @@ export function BuildFinderHero() {
         />
 
         <div className="mt-10 w-full max-w-2xl md:mt-14">
-          <TacticalDivider label="Sector 01 · Match the Mission" accent />
+          <TacticalDivider
+            label="Sector 01 · Match the Mission"
+            labelClassName="text-[11px] font-medium"
+            accent
+          />
         </div>
       </div>
     </SectionShell>

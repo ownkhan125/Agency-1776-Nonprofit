@@ -20,7 +20,7 @@ export default function GlobalError({ error, reset }) {
       <h2 className="text-2xl font-semibold uppercase tracking-tight text-foreground">
         Something went sideways.
       </h2>
-      <p className="text-sm leading-relaxed text-foreground/70">
+      <p className="text-sm leading-relaxed text-foreground/70 md:text-base">
         We hit an unexpected error rendering this page. It has been logged.
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">

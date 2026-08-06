@@ -74,7 +74,7 @@ export function Solutions() {
         <div className="mb-10 max-w-3xl md:mb-14">
           <SplitText
             as="p"
-            className="mb-5 text-[10px] uppercase tracking-[0.32em] text-accent"
+            className="mb-5 text-[11px] font-medium uppercase tracking-[0.32em] text-accent"
             text="Solution Paths"
           />
           <SplitText
@@ -147,7 +147,7 @@ export function Solutions() {
 
                     <SplitText
                       as="p"
-                      className="text-sm leading-relaxed text-foreground/75"
+                      className="text-sm leading-relaxed text-foreground/75 md:text-base"
                       text={body}
                     />
                   </div>

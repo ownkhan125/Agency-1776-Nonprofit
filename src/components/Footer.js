@@ -183,7 +183,7 @@ export function Footer() {
         {/* Signature bar — appears after the columns settle */}
         <div
           data-footer-signature
-          className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-foreground/10 pt-6 text-xs uppercase tracking-[0.28em] text-foreground/45 md:mt-12 md:flex-row md:items-center md:text-sm"
+          className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-foreground/10 pt-6 text-xs font-medium uppercase tracking-[0.28em] text-foreground/60 md:mt-12 md:flex-row md:items-center md:text-sm"
         >
           <span>© {year} Agency 1776 · Nonprofit Division</span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">

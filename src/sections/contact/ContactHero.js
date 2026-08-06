@@ -88,7 +88,7 @@ export function ContactHero() {
       />
 
       <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center text-center">
-        <div className="mb-8 flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-foreground/60 md:text-xs">
+        <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.32em] text-foreground/60 md:text-[13px]">
           <StarMark className="h-3 w-3 text-accent" />
           <span>Contact · Agency 1776</span>
           <span className="text-foreground/25">/</span>
@@ -125,7 +125,11 @@ export function ContactHero() {
         </div>
 
         <div className="mt-10 w-full max-w-2xl md:mt-14">
-          <TacticalDivider label="Sector 01 · Start the Brief" accent />
+          <TacticalDivider
+            label="Sector 01 · Start the Brief"
+            labelClassName="text-[11px] font-medium"
+            accent
+          />
         </div>
       </div>
     </SectionShell>

@@ -35,7 +35,7 @@ export function Approach() {
 
           <SplitText
             as="p"
-            className="mb-6 text-[10px] uppercase tracking-[0.32em] text-accent"
+            className="mb-6 text-[11px] font-medium uppercase tracking-[0.32em] text-accent"
             text="Why growth system matters"
           />
           <SplitText
