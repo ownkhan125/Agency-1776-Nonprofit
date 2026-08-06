@@ -11,11 +11,12 @@ import { applyStaggeredGrid } from "@/animations/staggeredGrid";
 import { cn } from "@/utils/cn";
 
 const SUPPORTER_LINES = [
-  "A new visitor should be able to understand the mission quickly.",
+  "A new visitor should understand the mission quickly.",
   "A donor should feel confident before giving.",
   "A volunteer should know where they fit.",
   "A partner should see the value of getting involved.",
   "A returning supporter should know what is happening next.",
+  "A campaign supporter should have a simple path to give, share, or act.",
 ];
 
 export function Journey() {
@@ -57,7 +58,7 @@ export function Journey() {
                 as="h2"
                 scrub
                 className="text-[clamp(2rem,4.6vw,3.75rem)] font-semibold leading-[1.05] tracking-tight"
-                text="Built Around Supporter Decisions."
+                text="Built Around Supporter Decisions"
               />
 
               <SplitText
@@ -68,7 +69,7 @@ export function Journey() {
               <SplitText
                 as="p"
                 className="max-w-md text-base leading-relaxed text-foreground/85"
-                text="Agency 1776 builds nonprofit websites around that journey."
+                text="Agency 1776 builds nonprofit digital systems around that journey."
               />
             </div>
           </div>

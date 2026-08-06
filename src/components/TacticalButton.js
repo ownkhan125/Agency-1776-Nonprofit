@@ -34,11 +34,11 @@ export function TacticalButton({
     if (!rootRef.current) return;
     registerGsap();
     const ctx = gsap.context(() => {
+      // Hover feedback that keeps the button perfectly in place — no
+      // lift, no letter-spacing widen (both shifted/resized the button).
+      // Only the arrow glyph slides forward, which never moves the plate
+      // itself; the CSS sweep highlight (::before) does the rest.
       const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
-      tl.to(rootRef.current, { y: -2, duration: 0.35 }, 0);
-      if (labelRef.current) {
-        tl.to(labelRef.current, { letterSpacing: "0.3em", duration: 0.42 }, 0);
-      }
       if (arrowRef.current) {
         tl.to(arrowRef.current, { x: 5, duration: 0.4 }, 0);
       }

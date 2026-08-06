@@ -13,24 +13,28 @@ import { cn } from "@/utils/cn";
 
 const SOLUTIONS = [
   {
-    title: "Essential Nonprofit Website",
+    title: "Essential Mission Website",
     body: "For organizations that need a clear digital home with mission, programs, donation, volunteer, and contact pages.",
   },
   {
-    title: "Nonprofit Website + Donation Path",
-    body: "For organizations that need stronger donation messaging, donor trust sections, giving pages, and recurring gift pathways.",
+    title: "Donation Path Upgrade",
+    body: "For organizations that need stronger donation messaging, donor trust sections, giving pages, recurring gift prompts, and donor follow-up.",
   },
   {
-    title: "Nonprofit Website + Campaign Assets",
-    body: "For organizations that need the website plus social posts, fundraising graphics, event assets, and supporter content.",
+    title: "Fundraising Campaign Support",
+    body: "For organizations launching a specific giving campaign, awareness push, event, drive, seasonal campaign, or sponsorship effort.",
   },
   {
-    title: "Fundraising Campaign Build",
-    body: "For organizations launching a specific giving campaign, awareness push, event, drive, or seasonal fundraising effort.",
+    title: "Volunteer Engagement Support",
+    body: "For organizations that need volunteer signup paths, recruitment messaging, reminder content, event assets, and volunteer communication.",
+  },
+  {
+    title: "Supporter Follow-Up Setup",
+    body: "For nonprofits that need a better way to organize donors, volunteers, partners, and supporters after they take action.",
   },
   {
     title: "Full Supporter Engagement Build",
-    body: "For nonprofits that need the website, donation pages, volunteer pages, campaign assets, email copy, and ongoing supporter communication built together.",
+    body: "For nonprofits that need the website, donation pages, volunteer pages, fundraising assets, email copy, supporter follow-up, outreach content, and ongoing creative support built together.",
   },
 ];
 
@@ -83,19 +87,19 @@ export function Solutions() {
 
         <ul
           data-staggered-grid
-          className="grid gap-6 md:grid-cols-3 lg:gap-8 xl:grid-cols-5"
+          className="grid gap-6 md:grid-cols-3 lg:gap-8"
           style={{ perspective: "1200px" }}
         >
           {SOLUTIONS.map(({ title, body }, i) => {
-            const featured = i === 2;
+            const featured = i === 1;
             return (
               <li
                 key={title}
-                data-col={i}
+                data-col={i % 3}
                 data-cursor="card"
                 className={cn(
                   "staggered-card relative flex",
-                  featured && "xl:-translate-y-8"
+                  featured && "lg:-translate-y-8"
                 )}
                 style={{ transformStyle: "preserve-3d" }}
               >

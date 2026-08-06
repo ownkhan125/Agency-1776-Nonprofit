@@ -10,49 +10,42 @@ import { TacticalButton } from "@/components/TacticalButton";
 import { gsap, registerGsap } from "@/animations/gsap";
 
 /**
- * FinalCTA — cinematic finale.
- *  Oversized outline star anchors the composition, sitting behind
- *  the H2. The H2 words slide in from alternating sides on scroll
- *  arrival (directional reveal). A single primary CTA completes the
- *  conversion — the earlier ghost secondary was removed to keep the
- *  finale focused on the one action worth taking.
+ * Build Finder Final CTA — cinematic closer mirroring the other page
+ * finales. Directional word reveal on the H2, slow star rotation on the
+ * backdrop, single conversion action into /contact.
  */
-export function FinalCTA() {
+export function BuildFinderCTA() {
   const rootRef = useRef(null);
 
   useLayoutEffect(() => {
     if (!rootRef.current) return;
     registerGsap();
     const ctx = gsap.context(() => {
-      // Directional word reveal on H2 — words come in from alternating
-      // sides, opacity fade, then settle. Reads as pieces of a
-      // classified doc snapping into place.
       const words = rootRef.current.querySelectorAll(
-        "[data-cinematic-h2] .rt-word"
+        "[data-bf-cta-h2] .rt-word"
       );
       if (words.length) {
         gsap.set(words, { opacity: 0 });
         words.forEach((w, i) => {
-          gsap.set(w, { xPercent: i % 2 === 0 ? -30 : 30, y: 20 });
+          gsap.set(w, { xPercent: i % 2 === 0 ? -28 : 28, y: 22 });
         });
         gsap.to(words, {
           xPercent: 0,
           y: 0,
           opacity: 1,
-          duration: 0.9,
-          stagger: 0.05,
+          duration: 0.85,
+          stagger: 0.045,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: "[data-cinematic-h2]",
-            start: "top 78%",
+            trigger: "[data-bf-cta-h2]",
+            start: "top 82%",
             toggleActions: "play none none reverse",
           },
         });
       }
 
-      // Slow rotation on the backdrop star — depth cue without noise.
-      gsap.to("[data-cinematic-star]", {
-        rotate: 12,
+      gsap.to("[data-bf-cta-star]", {
+        rotate: 10,
         ease: "none",
         scrollTrigger: {
           trigger: rootRef.current,
@@ -67,49 +60,43 @@ export function FinalCTA() {
 
   return (
     <div ref={rootRef} className="relative overflow-hidden">
-      {/* Full-bleed fabric stripes at ambient alpha */}
       <div
         aria-hidden="true"
         className="flag-stripe-bg pointer-events-none absolute inset-0 opacity-70"
       />
-      {/* Two crossing cinematic ribbons behind the finale — both extend
-          past the viewport edges so nothing terminates mid-section. */}
       <Ribbon
         variant="flow"
         tone="accent"
         opacity={0.3}
-        width={24}
-        className="-left-[10%] top-[22%] h-[42vh] w-[125%]"
+        width={26}
+        className="-left-[10%] top-[22%] h-[46vh] w-[130%]"
       />
       <Ribbon
         variant="fold"
         tone="foreground"
         opacity={0.14}
         width={12}
-        className="-right-[10%] top-[54%] h-[38vh] w-[125%]"
+        className="-right-[10%] top-[54%] h-[38vh] w-[130%]"
         reverse
       />
-      {/* Constellation backdrop replacing the plain outline star */}
       <StarField
-        count={28}
-        seed={101}
+        count={26}
+        seed={113}
         className="absolute inset-0 opacity-[0.35]"
       />
       <SectionShell
-        id="contact"
+        id="build-finder-contact"
         innerClassName="relative mx-auto max-w-[1600px] px-6 py-20 md:px-10 md:py-28"
       >
-        {/* Backdrop star anchor — smaller, sits centered but no longer
-            the only cinematic element. */}
         <div
-          data-cinematic-star
+          data-bf-cta-star
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
         >
           <StarMark
             variant="outline"
             strokeWidth={0.35}
-            className="h-[50vw] w-[50vw] max-h-[380px] max-w-[380px] text-accent/30"
+            className="h-[46vw] w-[46vw] max-h-[360px] max-w-[360px] text-accent/28"
           />
         </div>
 
@@ -118,14 +105,14 @@ export function FinalCTA() {
 
           <SplitText
             as="h2"
-            data-cinematic-h2
+            data-bf-cta-h2
             className="text-[clamp(2.25rem,5.6vw,4.75rem)] font-semibold leading-[1.02] tracking-tight"
-            text="Ready to Move Forward With Your Mission?"
+            text="Start With the Mission. Build the Support Around It."
           />
 
-          <div className="flex items-center justify-center pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <TacticalButton href="/contact" variant="primary">
-              Start the Conversation
+              Contact Us
             </TacticalButton>
           </div>
         </div>

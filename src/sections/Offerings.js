@@ -13,16 +13,16 @@ import { cn } from "@/utils/cn";
 
 const OFFERINGS = [
   {
-    title: "Essential Nonprofit Website",
+    title: "Essential Nonprofit Foundation",
     body: "For organizations that need a clear digital home with mission, programs, donation, volunteer, and contact pages.",
   },
   {
-    title: "Growth Nonprofit Website",
-    body: "For nonprofits that need impact proof, campaign pages, supporter capture, event promotion, and stronger donor pathways.",
+    title: "Donor Growth System",
+    body: "For nonprofits that need impact proof, donation pages, recurring giving paths, campaign pages, supporter capture, and stronger donor communication.",
   },
   {
     title: "Full Supporter Engagement Build",
-    body: "For organizations that need the website, donation campaign assets, social content, email copy, landing pages, and ongoing supporter communication.",
+    body: "For organizations that need the website, donation campaign assets, social content, email copy, landing pages, CRM setup, automation, ads support, and ongoing supporter communication built together.",
   },
 ];
 
@@ -74,12 +74,12 @@ export function Offerings() {
             <SplitText
               as="p"
               className="mt-6 text-xl font-medium leading-snug tracking-tight text-foreground/85 md:text-2xl"
-              text="Choose the Website Support That Fits Your Mission."
+              text="Choose the Support That Fits Your Mission."
             />
             <SplitText
               as="p"
               className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg"
-              text="Every nonprofit is different. Agency 1776 helps you choose the website support that fits your organization's goals."
+              text="Every nonprofit is different. Agency 1776 helps you choose the digital support that fits your organization's goals."
             />
           </div>
         </div>
@@ -163,8 +163,8 @@ export function Offerings() {
         </ul>
 
         <div className="mt-12 flex justify-center md:mt-16">
-          <TacticalButton href="/contact" variant="primary">
-            Find My Website Build
+          <TacticalButton href="/build-finder" variant="primary">
+            Find My Nonprofit Build
           </TacticalButton>
         </div>
       </SectionShell>

@@ -90,7 +90,7 @@ export function PortfolioCTA() {
           <SplitText
             as="p"
             className="max-w-2xl text-base leading-relaxed text-foreground/75 md:text-lg"
-            text="Let's build a nonprofit website and digital asset system that helps more people understand the mission, trust the work, and support the cause."
+            text="Let's build an automated digital system for your nonprofit that helps more people understand the mission, trust the work, and support the cause."
           />
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">

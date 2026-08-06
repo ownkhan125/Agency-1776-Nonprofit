@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { gsap, ScrollTrigger, registerGsap } from "@/animations/gsap";
+import { ScrollTrigger, registerGsap } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TacticalButton } from "@/components/TacticalButton";
@@ -19,88 +19,42 @@ import { TacticalButton } from "@/components/TacticalButton";
  * and any `/services/*` subroute (in case we add nested docs later).
  */
 const LINKS = [
-  { href: "/services",  label: "Services",  match: /^\/services(\/|$)/ },
-  { href: "/portfolio", label: "Portfolio", match: /^\/portfolio(\/|$)/ },
-  { href: "/contact",   label: "Contact",   match: /^\/contact(\/|$)/ },
+  { href: "/services",     label: "Services",     match: /^\/services(\/|$)/ },
+  { href: "/portfolio",    label: "Portfolio",    match: /^\/portfolio(\/|$)/ },
+  { href: "/build-finder", label: "Build Finder", match: /^\/build-finder(\/|$)/ },
+  { href: "/contact",      label: "Contact",      match: /^\/contact(\/|$)/ },
 ];
 
-function NavLink({ href, label, active, onHover }) {
-  const labelRef = useRef(null);
-  const glowRef = useRef(null);
-  const underlineRef = useRef(null);
-  const tlRef = useRef(null);
-
-  useEffect(() => {
-    if (!labelRef.current) return;
-    const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
-    tl.to(
-      labelRef.current,
-      { y: -3, letterSpacing: "0.02em", duration: 0.42 },
-      0
-    )
-      .to(
-        glowRef.current,
-        { opacity: 1, scale: 1, duration: 0.55, ease: "power2.out" },
-        0
-      )
-      .to(
-        underlineRef.current,
-        { scaleX: 1, duration: 0.45, ease: "power2.inOut" },
-        0.05
-      );
-    tlRef.current = tl;
-    return () => {
-      tl.kill();
-      tlRef.current = null;
-    };
-  }, []);
-
-  const handleEnter = () => {
-    onHover?.(href);
-    tlRef.current?.play();
-  };
-  const handleLeave = () => {
-    tlRef.current?.reverse();
-  };
-
+function NavLink({ href, label, active }) {
   return (
     <Link
       href={href}
       data-cursor="link"
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      onFocus={handleEnter}
-      onBlur={handleLeave}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group relative isolate inline-flex px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] outline-none md:text-xs",
-        active ? "text-foreground" : "text-foreground/60"
+        "group relative isolate inline-flex rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] outline-none transition-colors duration-300 md:text-xs",
+        active
+          ? "font-semibold text-white"
+          : "text-foreground/60 hover:text-foreground"
       )}
     >
-      {/* Soft accent glow behind the label */}
-      <span
-        ref={glowRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 rounded-full opacity-0"
-        style={{
-          background:
-            "radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 70%)",
-          filter: "blur(10px)",
-          transform: "scale(0.6)",
-        }}
-      />
+      {/* Hover pill — mirrors the active pill's look (faint accent fill +
+          hairline border) so hovering an item previews its active state.
+          Fades in place: nothing shifts, lifts, or resizes on hover.
+          Skipped on the active item, which already shows the shared
+          layout pill rendered by the parent. */}
+      {!active && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-accent/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background:
+              "color-mix(in srgb, var(--color-accent) 10%, transparent)",
+          }}
+        />
+      )}
 
-      <span ref={labelRef} className="relative inline-block">
-        {label}
-      </span>
-
-      {/* Thin accent underline — draws in from center on hover */}
-      <span
-        ref={underlineRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-3 bottom-0 h-px origin-center bg-accent"
-        style={{ transform: "scaleX(0)" }}
-      />
+      <span className="relative">{label}</span>
     </Link>
   );
 }
@@ -215,39 +169,19 @@ export function NavBar() {
           href="/"
           data-cursor="link"
           aria-label="Agency 1776 — home"
-          className="group relative flex min-w-0 shrink items-center gap-2 sm:gap-3"
+          className="relative flex min-w-0 shrink items-center"
         >
-          <span className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center md:h-9 md:w-9">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              style={{
-                background:
-                  "radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 32%, transparent), transparent 72%)",
-                filter: "blur(8px)",
-              }}
-            />
-            <svg
-              viewBox="0 0 40 40"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              className="relative h-7 w-7 text-accent md:h-8 md:w-8"
-              aria-hidden="true"
-            >
-              <circle cx="14" cy="18" r="10" />
-              <circle cx="26" cy="18" r="10" />
-              <circle cx="20" cy="28" r="10" />
-            </svg>
-          </span>
-          <span className="hidden min-w-0 flex-col leading-none lg:flex">
-            <span className="truncate text-[13px] font-medium tracking-tight text-foreground">
-              Agency 1776
-            </span>
-            <span className="mt-0.5 truncate text-[9px] uppercase tracking-[0.28em] text-foreground/40">
-              Nonprofit
-            </span>
-          </span>
+          {/* AGENCY 1776 lockup — light/dark variant swapped by theme */}
+          <img
+            src="/logo-agency.png"
+            alt="Agency 1776"
+            className="logo-light h-9 w-auto md:h-10"
+          />
+          <img
+            src="/logo-agency-dark.png"
+            alt="Agency 1776"
+            className="logo-dark h-9 w-auto md:h-10"
+          />
         </Link>
 
         {/* Nav — hidden on mobile. Active state driven by pathname. */}
@@ -261,11 +195,8 @@ export function NavBar() {
                     layoutId="nav-active-pill"
                     transition={{ type: "spring", stiffness: 360, damping: 30 }}
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-accent/25"
-                    style={{
-                      background:
-                        "color-mix(in srgb, var(--color-accent) 10%, transparent)",
-                    }}
+                    className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-accent"
+                    style={{ background: "var(--color-accent)" }}
                   />
                 ) : null}
                 <NavLink href={l.href} label={l.label} active={isActive} />
@@ -330,20 +261,20 @@ export function NavBar() {
                         className={cn(
                           "flex items-center justify-between rounded-2xl px-4 py-3 text-sm uppercase tracking-[0.22em] transition-colors",
                           isActive
-                            ? "border border-accent/25 text-foreground"
+                            ? "border border-accent font-semibold text-white"
                             : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                         )}
                         style={
                           isActive
-                            ? {
-                                background:
-                                  "color-mix(in srgb, var(--color-accent) 10%, transparent)",
-                              }
+                            ? { background: "var(--color-accent)" }
                             : undefined
                         }
                       >
                         <span>{l.label}</span>
-                        <span aria-hidden="true" className="text-accent">
+                        <span
+                          aria-hidden="true"
+                          className={isActive ? "text-white" : "text-accent"}
+                        >
                           →
                         </span>
                       </Link>

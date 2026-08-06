@@ -133,32 +133,34 @@ export function Moments() {
               className="mb-8 max-w-xl text-lg leading-relaxed tracking-tight text-foreground/80 md:mb-10 md:text-xl"
               text="Nonprofits rely on moments of trust."
             />
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-6 left-3 hidden w-px bg-accent/30 md:block"
-            />
-            <ul className="flex flex-col gap-6 md:gap-8">
-              {MOMENTS.map((line) => (
-                <li
-                  key={line}
-                  data-moment
-                  data-cursor="card"
-                  className="relative pl-10 md:pl-14"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center"
+            <div className="relative">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-5 left-3 hidden w-px bg-accent/30 md:block"
+              />
+              <ul className="flex flex-col gap-6 md:gap-8">
+                {MOMENTS.map((line) => (
+                  <li
+                    key={line}
+                    data-moment
+                    data-cursor="card"
+                    className="relative pl-10 md:pl-14"
                   >
-                    <StarMark className="h-3.5 w-3.5 text-accent" />
-                  </span>
-                  <SplitText
-                    as="p"
-                    className="text-lg leading-snug tracking-tight text-foreground md:text-2xl"
-                    text={line}
-                  />
-                </li>
-              ))}
-            </ul>
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 top-1 flex h-6 w-6 items-center justify-center"
+                    >
+                      <StarMark className="h-5 w-5 text-accent" />
+                    </span>
+                    <SplitText
+                      as="p"
+                      className="text-lg leading-snug tracking-tight text-foreground md:text-2xl"
+                      text={line}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 

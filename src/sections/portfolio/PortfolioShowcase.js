@@ -10,8 +10,9 @@ import { gsap, registerGsap } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 /**
- * Portfolio placeholders. Dummy website mockups until real projects
- * land — swap the `src`/`title`/`categories` at that point.
+ * Real portfolio work. Only live, shipped projects are listed here —
+ * add a new entry (title, categories, src screenshot, href) as each
+ * real project lands.
  */
 const PROJECTS = [
   {
@@ -19,31 +20,6 @@ const PROJECTS = [
     categories: ["Website", "Community", "Resources"],
     src: "/portfolio/parents-united.png",
     href: "https://parents-united.vercel.app",
-  },
-  {
-    title: "Youth Mentorship Alliance",
-    categories: ["Website", "Program Pages", "Email"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-02/1400/1000",
-  },
-  {
-    title: "Veterans Reintegration Fund",
-    categories: ["Campaign", "Social Assets", "Donation"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-03/1400/1000",
-  },
-  {
-    title: "Hope Health Coalition",
-    categories: ["Website", "Impact Pages", "Fundraising"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-04/1400/1000",
-  },
-  {
-    title: "Literacy for All Foundation",
-    categories: ["Website", "Volunteer", "Newsletter"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-05/1400/1000",
-  },
-  {
-    title: "Grassroots Justice Project",
-    categories: ["Campaign", "Advocacy", "Awareness"],
-    src: "https://picsum.photos/seed/agency1776-portfolio-06/1400/1000",
   },
 ];
 
