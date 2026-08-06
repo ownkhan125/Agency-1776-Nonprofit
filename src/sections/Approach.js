@@ -36,7 +36,7 @@ export function Approach() {
           <SplitText
             as="p"
             className="mb-6 text-[10px] uppercase tracking-[0.32em] text-accent"
-            text="Why the website matters"
+            text="Why growth system matters"
           />
           <SplitText
             as="h2"
@@ -51,6 +51,12 @@ export function Approach() {
             as="p"
             className="mt-8 max-w-2xl text-base leading-relaxed text-foreground/75 md:text-lg"
             text="A strong nonprofit website helps people understand your mission, gives them a platform to understand the message clearly, and helps a nonprofit earn support. Build it right."
+          />
+
+          <SplitText
+            as="p"
+            className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/75 md:text-lg"
+            text="But the website is only one part of the support journey. Agency 1776 helps build the digital foundation behind those moments."
           />
         </div>
       </SectionShell>

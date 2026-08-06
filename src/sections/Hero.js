@@ -248,7 +248,7 @@ export function Hero() {
           <SplitText
             as="p"
             className="mt-8 max-w-2xl text-base leading-relaxed text-foreground/70 md:text-lg"
-            text="Agency 1776 builds nonprofit websites for organizations that need to earn donor confidence and make it easier for people to give, volunteer, partner, and stay involved."
+            text="Agency 1776 builds automated digital support for nonprofit organizations that need to earn donor confidence, and make it easier for people to give, volunteer, partner, and stay involved."
           />
 
           <div

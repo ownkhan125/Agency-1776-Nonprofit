@@ -14,19 +14,27 @@ const STEPS = [
   },
   {
     title: "Organize the Story",
-    body: "We shape the mission message, program structure, donation language, volunteer path, and trust-building content.",
+    body: "We shape the mission message, program structure, donation language, volunteer path, impact proof, and trust-building content.",
   },
   {
-    title: "Build the Website",
+    title: "Build the Digital Home",
     body: "We create a nonprofit website designed to explain the work, show credibility, and guide people toward support.",
   },
   {
-    title: "Prepare Supporter Assets",
-    body: "We create digital content your organization can use for fundraising, volunteer recruitment, events, updates, and awareness.",
+    title: "Strengthen Giving and Volunteer Paths",
+    body: "We build donation pages, volunteer signup paths, supporter capture forms, fundraising campaign pages, and calls-to-action that make support easier.",
   },
   {
-    title: "Launch With a Clear Giving Path",
-    body: "Your organization launches with a website that helps people understand the mission, trust the work, and take the next step.",
+    title: "Connect Supporter Follow-Up",
+    body: "We help organize supporter information through CRM-style structure, email capture, follow-up flows, donor updates, and volunteer communication paths.",
+  },
+  {
+    title: "Prepare Supporter Assets",
+    body: "We create digital content your organization can use for fundraising, volunteer recruitment, events, updates, awareness campaigns, and community support.",
+  },
+  {
+    title: "Support the Mission Monthly",
+    body: "As your organization grows, the system can continue to support new campaigns, donor updates, fundraising pushes, landing pages, ads, and creative needs.",
   },
 ];
 

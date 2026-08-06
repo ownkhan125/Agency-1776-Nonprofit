@@ -29,11 +29,14 @@ const NEEDS = [
   "New nonprofit website",
   "Website redesign",
   "Donation page",
-  "Volunteer signup page",
+  "Volunteer signup path",
   "Fundraising campaign page",
+  "Supporter follow-up",
+  "Donor thank-you messaging",
+  "Volunteer communication",
   "Social media assets",
   "Email / supporter copy",
-  "Full supporter engagement build",
+  "Ongoing monthly support",
   "Not sure yet",
 ];
 
@@ -50,16 +53,21 @@ const GOALS = [
 ];
 
 const BRANDING = [
-  "Yes — logo and colors are ready",
+  "Yes - logo and colors are ready",
   "Partially",
-  "No — we need help",
+  "No - we need help",
   "Not sure",
 ];
 
 const DONATION_PLATFORM = ["Yes", "Partially", "No", "Not sure"];
 
-const GHL_WEBHOOK_URL =
-  "https://services.leadconnectorhq.com/hooks/8TREyhjak2hmHw12ESeq/webhook-trigger/pA71jqUh6XBL5zdivsmw";
+const MONTHLY_SUPPORT = [
+  "Around $1,000/month",
+  "Around $1,500/month",
+  "Around $2,000/month",
+  "Custom / not sure",
+];
+
 const GHL_LOCATION_ID = "8TREyhjak2hmHw12ESeq";
 
 /**
@@ -106,6 +114,10 @@ const chamferClip = {
  */
 export function ContactForm() {
   const [status, setStatus] = useState("idle");
+  // Phone is tracked so the SMS opt-in checkboxes stay disabled until a
+  // number is present — TCPA-style: no consent without a target number.
+  const [phone, setPhone] = useState("");
+  const smsEnabled = phone.trim().length > 0;
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -129,7 +141,10 @@ export function ContactForm() {
       goal: (data.get("goal") || "").toString(),
       branding: (data.get("branding") || "").toString(),
       donation_platform: (data.get("donationPlatform") || "").toString(),
+      monthly_support: (data.get("monthlySupport") || "").toString(),
       message: (data.get("message") || "").toString().trim(),
+      sms_account_consent: data.get("smsAccountConsent") ? "Yes" : "No",
+      sms_marketing_consent: data.get("smsMarketingConsent") ? "Yes" : "No",
       source: "Agency 1776 Nonprofit — Contact Form",
       submitted_at: new Date().toISOString(),
       page_url:
@@ -139,16 +154,23 @@ export function ContactForm() {
     setStatus("submitting");
 
     try {
-      const res = await fetch(GHL_WEBHOOK_URL, {
+      // Posts same-origin to our server route, which upserts the contact
+      // (all custom fields + SMS consent/DND) through the GHL API with a
+      // server-side token, then forwards to the main webhook.
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.ok) {
+        throw new Error(result.error || `Request failed (${res.status})`);
+      }
 
       setStatus("submitted");
       form.reset();
+      setPhone("");
     } catch (err) {
       console.error("Contact form submission failed:", err);
       setStatus("error");
@@ -228,6 +250,8 @@ export function ContactForm() {
                 id="phone"
                 name="phone"
                 type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="Enter your phone number"
                 className={controlBase}
                 style={chamferClip}
@@ -324,7 +348,6 @@ export function ContactForm() {
             <Field
               label="Do You Already Have a Donation Platform?"
               htmlFor="donation-platform"
-              span={2}
             >
               <select
                 id="donation-platform"
@@ -344,6 +367,25 @@ export function ContactForm() {
               </select>
             </Field>
 
+            <Field label="Monthly Support Range" htmlFor="monthly-support">
+              <select
+                id="monthly-support"
+                name="monthlySupport"
+                defaultValue=""
+                className={cn(controlBase, "themed-select")}
+                style={chamferClip}
+              >
+                <option value="" disabled>
+                  Select an option
+                </option>
+                {MONTHLY_SUPPORT.map((o) => (
+                  <option key={o} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
             <Field label="Message" htmlFor="message" span={2}>
               <textarea
                 id="message"
@@ -355,6 +397,66 @@ export function ContactForm() {
                 style={chamferClip}
               />
             </Field>
+
+            {/* SMS preferences — consent checkboxes stay disabled until a
+                phone number is entered above (no opt-in without a number). */}
+            <div className="md:col-span-2 flex flex-col gap-3">
+              <span className="text-xs uppercase tracking-[0.28em] text-foreground/60">
+                SMS preferences
+              </span>
+              {!smsEnabled && (
+                <p className="text-sm leading-relaxed text-foreground/45">
+                  Enter a phone number above to opt in to SMS messages.
+                </p>
+              )}
+              <div
+                className={cn(
+                  "flex flex-col gap-3 transition-opacity duration-200",
+                  !smsEnabled && "opacity-50"
+                )}
+              >
+                <label
+                  data-cursor={smsEnabled ? undefined : "disabled"}
+                  className={cn(
+                    "flex items-start gap-3 text-sm leading-relaxed text-foreground/70",
+                    !smsEnabled && "cursor-not-allowed"
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    name="smsAccountConsent"
+                    disabled={!smsEnabled}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[color:var(--color-accent)] disabled:cursor-not-allowed"
+                  />
+                  <span>
+                    I agree to receive account and project-related text messages
+                    from Agency 1776 Nonprofit at the number provided. Message
+                    frequency varies. Msg &amp; data rates may apply. Reply STOP
+                    to opt out, HELP for help.
+                  </span>
+                </label>
+                <label
+                  data-cursor={smsEnabled ? undefined : "disabled"}
+                  className={cn(
+                    "flex items-start gap-3 text-sm leading-relaxed text-foreground/70",
+                    !smsEnabled && "cursor-not-allowed"
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    name="smsMarketingConsent"
+                    disabled={!smsEnabled}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[color:var(--color-accent)] disabled:cursor-not-allowed"
+                  />
+                  <span>
+                    I agree to receive occasional promotional and marketing text
+                    messages from Agency 1776 Nonprofit. Message frequency
+                    varies. Msg &amp; data rates may apply. Reply STOP to opt
+                    out, HELP for help.
+                  </span>
+                </label>
+              </div>
+            </div>
 
             <div className="md:col-span-2 mt-2 flex flex-col items-start gap-4">
               <button

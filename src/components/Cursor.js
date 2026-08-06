@@ -172,11 +172,17 @@ export function Cursor() {
       }
       switch (state) {
         case "button":
+          // Border uses `foreground` (not accent) so the ring stays
+          // visible on top of same-color buttons — e.g. the red primary
+          // button, where an accent-colored outline would vanish.
+          // `foreground` auto-adapts: near-black in light mode, light in
+          // dark mode, so it contrasts against any button fill in both.
           gsap.to(ring, {
             opacity: 1,
             scale: 1.55,
-            backgroundColor: "var(--color-accent)",
-            borderColor: "var(--color-accent)",
+            backgroundColor:
+              "color-mix(in srgb, var(--color-accent) 22%, transparent)",
+            borderColor: "var(--color-foreground)",
             duration: 0.32,
             ease: "power3.out",
           });
@@ -186,7 +192,8 @@ export function Cursor() {
           gsap.to(ring, {
             opacity: 1,
             scale: 2.1,
-            backgroundColor: "rgba(0,0,0,0)",
+            backgroundColor:
+              "color-mix(in srgb, var(--color-foreground) 14%, transparent)",
             borderColor: "var(--color-foreground)",
             duration: 0.4,
             ease: "power3.out",
@@ -196,8 +203,9 @@ export function Cursor() {
         case "link":
           gsap.to(ring, {
             opacity: 1,
-            scale: 1.25,
-            backgroundColor: "var(--color-foreground)",
+            scale: 1.6,
+            backgroundColor:
+              "color-mix(in srgb, var(--color-foreground) 14%, transparent)",
             borderColor: "var(--color-foreground)",
             duration: 0.3,
             ease: "power3.out",
@@ -208,7 +216,8 @@ export function Cursor() {
           gsap.to(ring, {
             opacity: 1,
             scale: 2.6,
-            backgroundColor: "rgba(0,0,0,0)",
+            backgroundColor:
+              "color-mix(in srgb, var(--color-accent) 16%, transparent)",
             borderColor: "var(--color-accent)",
             duration: 0.4,
             ease: "power3.out",
@@ -241,6 +250,13 @@ export function Cursor() {
           // element. Ring/dot/eye all fade out so the local element
           // can take over without visual conflict.
           gsap.to(ring, { opacity: 0, duration: 0.28, ease: "power3.out" });
+          gsap.to(dot, { opacity: 0, duration: 0.2 });
+          break;
+        case "disabled":
+          // Custom cursor fades out so the browser's native
+          // `not-allowed` icon (set in globals.css) is what the user
+          // sees over disabled controls.
+          gsap.to(ring, { opacity: 0, duration: 0.2, ease: "power3.out" });
           gsap.to(dot, { opacity: 0, duration: 0.2 });
           break;
         default:
