@@ -102,7 +102,7 @@ export function Audience() {
               <StarMark className="h-5 w-5 text-accent" />
               <SplitText
                 as="p"
-                className="text-[10px] uppercase tracking-[0.32em] text-accent"
+                className="text-[11px] font-medium uppercase tracking-[0.32em] text-accent"
                 text="Who this is for"
               />
             </div>
@@ -160,7 +160,7 @@ function Marquee({ items, direction }) {
       className="flex items-center gap-3"
     >
       <span
-        className="inline-flex items-center gap-3 whitespace-nowrap border border-foreground/20 bg-surface px-5 py-2.5 text-xs uppercase tracking-[0.18em] text-foreground/80 backdrop-blur-[1px]"
+        className="inline-flex items-center gap-3 whitespace-nowrap border border-foreground/20 bg-surface px-5 py-2.5 text-[13px] uppercase tracking-[0.18em] text-foreground/80 backdrop-blur-[1px]"
         style={{
           clipPath:
             "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)",

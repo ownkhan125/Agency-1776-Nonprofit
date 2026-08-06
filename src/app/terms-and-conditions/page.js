@@ -1,4 +1,4 @@
-import { Cursor } from "@/components/Cursor";
+import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
@@ -6,93 +6,150 @@ import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { LegalDocument } from "@/sections/legal/LegalDocument";
 
 export const metadata = {
-  title: "Terms & Conditions · Agency 1776 Nonprofit",
+  title: "Terms & Conditions · Agency 1776",
   description:
-    "The terms that govern your use of the Agency 1776 website and the nonprofit digital services we provide.",
+    "The terms that govern your use of the Agency 1776 website.",
 };
 
+const linkClass =
+  "text-accent underline underline-offset-4 decoration-accent/40 transition-colors hover:decoration-accent";
+
 const INTRO = [
-  'These Terms and Conditions ("Terms") govern your use of the Agency 1776 website and the services we provide. Please read them carefully.',
-  "By accessing our website or engaging our services, you agree to be bound by these Terms.",
+  "These Terms & Conditions govern your use of the Agency 1776 website. By accessing or using this website, you agree to these Terms.",
 ];
 
 const SECTIONS = [
   {
-    heading: "1. Services",
+    heading: "1. Website Use",
     body: [
-      "Agency 1776 provides digital services for nonprofit organizations, including websites, donation pages, campaign pages, supporter follow-up, and related creative support. The specific scope of any engagement is defined in a separate proposal or agreement.",
+      "You agree to use this website only for lawful purposes and in a manner that does not interfere with its operation or the experience of other visitors.",
+      "You may not:",
+    ],
+    list: [
+      "Submit false or misleading information",
+      "Attempt unauthorized access to our systems",
+      "Introduce malicious software or harmful code",
+      "Use this website for unlawful purposes",
     ],
   },
   {
-    heading: "2. Use of the Website",
+    heading: "2. Intellectual Property",
     body: [
-      "You agree to use our website lawfully and not to misuse it, interfere with its operation, or attempt to access it in an unauthorized way.",
+      "All content on this website, including text, graphics, branding, logos, images, designs, videos, and other creative materials, is the property of Agency 1776 unless otherwise stated.",
+      "No content may be reproduced, copied, modified, or distributed without prior written permission.",
     ],
   },
   {
-    heading: "3. Inquiries and Communication",
+    heading: "3. Project Inquiries",
     body: [
-      "Submitting a form or inquiry does not create a binding agreement. A project begins only once both parties agree to a defined scope, timeline, and terms in writing.",
+      "Submitting a project inquiry or consultation request does not establish a contractual relationship or guarantee that Agency 1776 will accept a project.",
     ],
   },
   {
-    heading: "4. Intellectual Property",
-    body: [
-      "All content on this website — including text, graphics, logos, and design — is the property of Agency 1776 or its licensors and is protected by applicable laws. You may not reproduce or reuse it without permission. Ownership of deliverables created for a client is addressed in the project agreement.",
+    heading: "4. SMS Terms",
+    content: [
+      {
+        type: "p",
+        text: "If you opt in to receive SMS communications:",
+      },
+      {
+        type: "list",
+        items: [
+          "Message frequency varies.",
+          "Message and data rates may apply.",
+          "Reply STOP to unsubscribe.",
+          "Reply HELP for assistance.",
+        ],
+      },
+      {
+        type: "p",
+        text: "SMS consent is not a condition of purchasing services.",
+      },
+      {
+        type: "p",
+        text: "SMS opt-in information and consent will not be shared, sold, rented, or disclosed to third parties or affiliates for marketing purposes.",
+      },
+      {
+        type: "p",
+        text: (
+          <>
+            Please review our{" "}
+            <Link href="/privacy-policy" className={linkClass}>
+              Privacy Policy
+            </Link>{" "}
+            to learn how we collect, use, and protect your personal information.
+          </>
+        ),
+      },
     ],
   },
   {
-    heading: "5. Client Responsibilities",
+    heading: "5. Third-Party Services",
     body: [
-      "For project work, clients are responsible for providing accurate information, timely feedback, and any content, access, or approvals needed to complete the work.",
+      "Our website may include links to external websites or services. Agency 1776 is not responsible for the content or practices of those third-party websites.",
     ],
   },
   {
-    heading: "6. Fees and Payments",
+    heading: "6. Disclaimer",
     body: [
-      "Fees, payment schedules, and ongoing monthly support terms are set out in each project proposal or agreement. Recurring services continue until cancelled according to the agreed terms.",
+      "Information on this website is provided for general informational purposes. While we strive to keep content accurate and up to date, we make no guarantees regarding completeness or accuracy.",
     ],
   },
   {
-    heading: "7. Third-Party Tools and Links",
+    heading: "7. Limitation of Liability",
     body: [
-      "Our services and website may reference or integrate third-party tools and platforms. We are not responsible for the content, availability, or practices of third parties.",
+      "To the fullest extent permitted by law, Agency 1776 shall not be liable for any indirect, incidental, consequential, or special damages arising from the use of this website.",
     ],
   },
   {
-    heading: "8. Disclaimers",
+    heading: "8. Changes to These Terms",
     body: [
-      'Our website and services are provided "as is" without warranties of any kind, whether express or implied, to the fullest extent permitted by law. We do not guarantee specific results such as donation, volunteer, or fundraising outcomes.',
+      "We reserve the right to update these Terms & Conditions at any time. Any changes will become effective upon publication on this page.",
     ],
   },
   {
-    heading: "9. Limitation of Liability",
+    heading: "9. Governing Law",
     body: [
-      "To the fullest extent permitted by law, Agency 1776 shall not be liable for any indirect, incidental, or consequential damages arising from your use of our website or services.",
+      "These Terms & Conditions are governed by the laws of the State of Arizona, without regard to its conflict of law principles.",
     ],
   },
   {
-    heading: "10. Termination",
-    body: [
-      "We may suspend or discontinue access to our website at any time. Termination of project services is governed by the applicable project agreement.",
-    ],
-  },
-  {
-    heading: "11. Governing Law",
-    body: [
-      "These Terms are governed by the laws of the jurisdiction in which Agency 1776 operates, without regard to conflict-of-law principles.",
-    ],
-  },
-  {
-    heading: "12. Changes to These Terms",
-    body: [
-      "We may update these Terms from time to time. Continued use of our website after changes take effect constitutes acceptance of the revised Terms.",
-    ],
-  },
-  {
-    heading: "13. Contact Us",
-    body: [
-      "For questions about these Terms, contact us at outdevelopment@op1776.com.",
+    heading: "10. Contact",
+    content: [
+      {
+        type: "p",
+        text: (
+          <>
+            Agency 1776
+            <br />
+            2325 E Camelback Rd, Suite 400
+            <br />
+            Phoenix, AZ 85016, USA
+          </>
+        ),
+      },
+      {
+        type: "p",
+        text: (
+          <>
+            Email:{" "}
+            <a href="mailto:outdevelopment@op1776.com" className={linkClass}>
+              outdevelopment@op1776.com
+            </a>
+          </>
+        ),
+      },
+      {
+        type: "p",
+        text: (
+          <>
+            Phone:{" "}
+            <a href="tel:+18446201776" className={linkClass}>
+              +1 (844) 620-1776
+            </a>
+          </>
+        ),
+      },
     ],
   },
 ];
@@ -100,7 +157,6 @@ const SECTIONS = [
 export default function TermsAndConditionsPage() {
   return (
     <div className="bg-background text-foreground">
-      <Cursor />
       <TopBar />
       <NavBar />
       <SmoothScrollProvider>
@@ -108,7 +164,7 @@ export default function TermsAndConditionsPage() {
           <LegalDocument
             eyebrow="Terms · Agency 1776"
             title="Terms & Conditions"
-            updated="August 5, 2026"
+            updated="August 2026"
             intro={INTRO}
             sections={SECTIONS}
           />

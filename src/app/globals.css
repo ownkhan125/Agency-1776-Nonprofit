@@ -598,7 +598,7 @@ p {
   align-items: center;
   gap: 0.75rem;
   padding: 0.95rem 1.75rem;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -616,7 +616,13 @@ p {
   will-change: transform;
 }
 @media (min-width: 768px) {
-  .tac-btn { font-size: 12px; padding: 1rem 2rem; }
+  .tac-btn { font-size: 14px; padding: 1rem 2rem; }
+}
+/* Larger label variant for standalone hero/CTA buttons. Declared after
+   the base rule so it wins on equal specificity. */
+.tac-btn.tac-btn-lg { font-size: 14px; }
+@media (min-width: 768px) {
+  .tac-btn.tac-btn-lg { font-size: 16px; }
 }
 .tac-btn::before {
   /* Sweep highlight — hidden by default, GSAP slides it on hover. */

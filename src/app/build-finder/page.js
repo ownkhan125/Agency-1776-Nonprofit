@@ -1,4 +1,3 @@
-import { Cursor } from "@/components/Cursor";
 import TopBar from "@/components/TopBar";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
@@ -16,7 +15,6 @@ export const metadata = {
 export default function BuildFinderPage() {
   return (
     <div className="bg-background text-foreground">
-      <Cursor />
       <TopBar />
       <NavBar />
       <SmoothScrollProvider>

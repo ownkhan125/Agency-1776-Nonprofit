@@ -257,7 +257,7 @@ export function PortfolioShowcase() {
                     showRowPreview && "pr-[300px] xl:pr-[360px]"
                   )}
                 >
-                  <span className="col-start-1 text-xs uppercase tracking-[0.32em] text-foreground/45">
+                  <span className="col-start-1 text-xs font-medium uppercase tracking-[0.32em] text-foreground/55">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
@@ -277,7 +277,7 @@ export function PortfolioShowcase() {
                     <span>{p.title}</span>
                   </h3>
 
-                  <span className="col-start-3 text-xs uppercase tracking-[0.28em] text-foreground/60">
+                  <span className="col-start-3 text-xs font-medium uppercase tracking-[0.28em] text-foreground/70">
                     {p.categories.join(" · ")}
                   </span>
                 </div>
@@ -374,14 +374,14 @@ function ProjectCard({ project, index }) {
       </div>
       <div className="flex flex-col gap-3">
         <div className="flex items-baseline gap-3 md:gap-4">
-          <span className="text-[10px] uppercase tracking-[0.32em] text-foreground/45 md:text-xs">
+          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-foreground/55 md:text-xs">
             {String(index + 1).padStart(2, "0")}
           </span>
           <h3 className="text-xl font-semibold uppercase leading-none tracking-tight md:text-2xl">
             {project.title}
           </h3>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.28em] text-foreground/60 md:text-xs">
+        <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-foreground/70 md:text-xs">
           {project.categories.join(" · ")}
         </span>
       </div>

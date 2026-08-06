@@ -35,7 +35,7 @@ function NavLink({ href, label, active }) {
         "group relative isolate inline-flex rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] outline-none transition-colors duration-300 md:text-xs",
         active
           ? "font-semibold text-white"
-          : "text-foreground/60 hover:text-foreground"
+          : "font-medium text-foreground/70 hover:text-foreground"
       )}
     >
       {/* Hover pill — mirrors the active pill's look (faint accent fill +

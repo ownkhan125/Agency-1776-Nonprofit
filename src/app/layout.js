@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
+import { Cursor } from "@/components/Cursor";
 
 // Editorial display face — all-caps by nature, best at large sizes with
 // a touch of tracking. Exposed as --font-heading; base rules in
@@ -48,7 +49,17 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {/*
+            The custom cursor lives at the layout level so it mounts ONCE and
+            persists across client-side navigation. Rendering it per-page made
+            it unmount/remount on every nav — the fresh instance started hidden
+            at (0,0), so the cursor appeared to vanish into the top-left corner
+            until the next mouse move.
+          */}
+          <Cursor />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

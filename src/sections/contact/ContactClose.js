@@ -72,7 +72,11 @@ export function ContactClose() {
           />
 
           <div className="w-full max-w-2xl">
-            <TacticalDivider label="End of Brief · Agency 1776" accent />
+            <TacticalDivider
+              label="End of Brief · Agency 1776"
+              labelClassName="text-[11px] font-medium"
+              accent
+            />
           </div>
         </div>
       </SectionShell>

@@ -137,7 +137,7 @@ export function Deliverables() {
 
                     <SplitText
                       as="h3"
-                      className="text-lg font-semibold leading-tight tracking-tight md:text-xl"
+                      className="text-xl font-semibold leading-tight tracking-tight md:text-[1.375rem]"
                       text={title}
                     />
 
@@ -145,7 +145,7 @@ export function Deliverables() {
 
                     <SplitText
                       as="p"
-                      className="text-sm leading-relaxed text-foreground/70"
+                      className="text-sm leading-relaxed text-foreground/70 md:text-base"
                       text={body}
                     />
                   </div>
