@@ -5,9 +5,9 @@ import { gsap, registerGsap } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 const TABS = [
-  { id: "business",    label: "Business",                  active: false, href: "https://agency-1776-business.vercel.app/" },
-  { id: "politicians", label: "Politicians or Candidates", active: false, href: "https://agency-1776-politicians-or-candidat.vercel.app/" },
-  { id: "nonprofit",   label: "Nonprofit",                 active: true,  href: "https://agency-1776-nonprofit.vercel.app/" },
+  { id: "business",    label: "Business",                  active: false, href: "https://www.agency1776.com" },
+  { id: "politicians", label: "Politicians or Candidates", active: false, href: "https://politicians.agency1776.com" },
+  { id: "nonprofit",   label: "Nonprofit",                 active: true,  href: "https://nonprofits.agency1776.com" },
 ];
 
 // Top Bar palette is intentionally frozen to the dark-theme values and
