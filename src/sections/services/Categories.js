@@ -143,9 +143,11 @@ export function Categories() {
             }}
           >
             <img
-              src="https://picsum.photos/seed/agency1776-services-community/2000/700"
+              src="https://picsum.photos/seed/agency1776-services-community/1400/500"
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover mix-blend-luminosity opacity-80"
             />
             <div
@@ -204,7 +206,13 @@ function CategoryCard({ category, col, alt, wide = false }) {
         <span className="tac-bracket tac-bracket-tl" />
         <span className="tac-bracket tac-bracket-br" />
 
-        <div className="flex items-start gap-3">
+        {/* Heading + blurb reserve a consistent height, and the seam is
+            pushed to the bottom (mt-auto). Because every card carries the
+            same 6-item list, anchoring the seam + list to the bottom of the
+            equal-height grid cell keeps the dividers — and the bullet lists
+            below them — on the same level across a row, regardless of how
+            many lines each heading or blurb wraps to. */}
+        <div className="flex items-start gap-3 md:min-h-[3.3rem]">
           <StarMark className="mt-1 h-4 w-4 shrink-0 text-accent" />
           <SplitText
             as="h3"
@@ -219,7 +227,7 @@ function CategoryCard({ category, col, alt, wide = false }) {
           text={category.blurb}
         />
 
-        <div data-animate-seam className="tac-seam" />
+        <div data-animate-seam className="tac-seam mt-auto" />
 
         <ul
           className={cn(

@@ -7,7 +7,7 @@ import { StarMark } from "@/components/StarMark";
 import { StarField } from "@/components/StarField";
 import { Ribbon } from "@/components/Ribbon";
 import { TacticalButton } from "@/components/TacticalButton";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 
 /**
  * Build Finder Final CTA — cinematic closer mirroring the other page
@@ -39,7 +39,7 @@ export function BuildFinderCTA() {
           scrollTrigger: {
             trigger: "[data-bf-cta-h2]",
             start: "top 82%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }

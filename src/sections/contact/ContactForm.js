@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { StarMark } from "@/components/StarMark";
 import { TacticalDivider } from "@/components/TacticalDivider";
+import {
+  formatPhoneInput,
+  isPhoneComplete,
+  normalizePhoneForSubmit,
+} from "@/lib/phone";
 import { cn } from "@/utils/cn";
 
 // ── Exact-content dropdown option lists ───────────────────────────────
@@ -70,31 +75,8 @@ const MONTHLY_SUPPORT = [
 
 const GHL_LOCATION_ID = "8TREyhjak2hmHw12ESeq";
 
-// ── Phone helpers ─────────────────────────────────────────────────────
-// US numbers only (the org is US-based). We format as the user types and
-// hard-cap the significant digits so junk like "123123123213..." can't be
-// entered, and an incomplete number is caught on submit.
-
-// Strip to digits, dropping an optional leading "1" country code, capped
-// at 10 significant digits.
-function phoneDigits(value) {
-  let d = (value || "").replace(/\D/g, "");
-  if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
-  return d.slice(0, 10);
-}
-
-// Progressive display formatting → "(XXX) XXX-XXXX".
-function formatUsPhone(value) {
-  const d = phoneDigits(value);
-  if (d.length < 4) return d;
-  if (d.length < 7) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
-}
-
-// A complete US number has exactly 10 significant digits.
-function isCompleteUsPhone(value) {
-  return phoneDigits(value).length === 10;
-}
+// Phone formatting/validation lives in @/lib/phone so every form on the
+// site shares one canonical "+1 (xxx) xxx-xxxx" implementation.
 
 /**
  * Reusable field wrapper with the site's tactical language.
@@ -140,15 +122,29 @@ const chamferClip = {
  */
 export function ContactForm() {
   const [status, setStatus] = useState("idle");
-  // Phone is tracked so the SMS opt-in checkboxes stay disabled until a
-  // COMPLETE number is present — TCPA-style: no consent without a valid
-  // target number. `phoneError` surfaces incomplete-number validation.
+  // Phone drives the SMS consent boxes. `hasPhone` (any digits) unlocks
+  // them; `phoneComplete` (a full 10-digit number) is what actually gates
+  // submit, so a partially typed number can never ship. `phoneError`
+  // surfaces the incomplete-number message.
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const smsEnabled = isCompleteUsPhone(phone);
+  const [smsAccountConsent, setSmsAccountConsent] = useState(false);
+  const [smsMarketingConsent, setSmsMarketingConsent] = useState(false);
+
+  const hasPhone = phone.trim().length > 0;
+  const phoneComplete = isPhoneComplete(phone);
+
+  // Emptying the phone must not leave stale consent checked — reset both
+  // flags whenever the field goes blank (no consent without a number).
+  useEffect(() => {
+    if (!hasPhone) {
+      setSmsAccountConsent(false);
+      setSmsMarketingConsent(false);
+    }
+  }, [hasPhone]);
 
   const onPhoneChange = (e) => {
-    setPhone(formatUsPhone(e.target.value));
+    setPhone(formatPhoneInput(e.target.value));
     if (phoneError) setPhoneError("");
   };
 
@@ -157,10 +153,9 @@ export function ContactForm() {
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    // Phone is optional, but if one is entered it must be complete.
-    const digits = phoneDigits(phone);
-    if (digits.length > 0 && digits.length !== 10) {
-      setPhoneError("Enter a complete 10-digit US phone number.");
+    // Phone is optional, but a partially typed number must never submit.
+    if (hasPhone && !phoneComplete) {
+      setPhoneError("Enter a complete phone number: +1 (xxx) xxx-xxxx.");
       form.querySelector("#phone")?.focus();
       return;
     }
@@ -176,7 +171,7 @@ export function ContactForm() {
       first_name: firstName || "",
       last_name: lastName || "",
       email: (data.get("email") || "").toString().trim(),
-      phone: digits ? `+1${digits}` : "",
+      phone: normalizePhoneForSubmit(phone),
       organization_name: (data.get("organizationName") || "").toString().trim(),
       organization_type: (data.get("organizationType") || "").toString(),
       need: (data.get("need") || "").toString(),
@@ -185,8 +180,8 @@ export function ContactForm() {
       donation_platform: (data.get("donationPlatform") || "").toString(),
       monthly_support: (data.get("monthlySupport") || "").toString(),
       message: (data.get("message") || "").toString().trim(),
-      sms_account_consent: data.get("smsAccountConsent") ? "Yes" : "No",
-      sms_marketing_consent: data.get("smsMarketingConsent") ? "Yes" : "No",
+      sms_account_consent: smsAccountConsent ? "Yes" : "No",
+      sms_marketing_consent: smsMarketingConsent ? "Yes" : "No",
       source: "Agency 1776 Nonprofit — Contact Form",
       submitted_at: new Date().toISOString(),
       page_url:
@@ -213,6 +208,8 @@ export function ContactForm() {
       setStatus("submitted");
       form.reset();
       setPhone("");
+      setSmsAccountConsent(false);
+      setSmsMarketingConsent(false);
     } catch (err) {
       console.error("Contact form submission failed:", err);
       setStatus("error");
@@ -298,10 +295,10 @@ export function ContactForm() {
                 type="tel"
                 inputMode="tel"
                 autoComplete="tel"
-                maxLength={14}
+                maxLength={17}
                 value={phone}
                 onChange={onPhoneChange}
-                placeholder="(555) 123-4567"
+                placeholder="+1 (503) 555-0123"
                 aria-invalid={phoneError ? "true" : undefined}
                 aria-describedby={phoneError ? "phone-error" : undefined}
                 className={cn(
@@ -462,13 +459,14 @@ export function ContactForm() {
               />
             </Field>
 
-            {/* SMS preferences — consent checkboxes stay disabled until a
-                phone number is entered above (no opt-in without a number). */}
+            {/* SMS preferences — optional. Consent checkboxes stay disabled
+                until a phone number is entered above (no opt-in without a
+                number); emptying the phone auto-clears them. */}
             <div className="md:col-span-2 flex flex-col gap-3">
               <span className="text-xs uppercase tracking-[0.28em] text-foreground/60">
                 SMS preferences
               </span>
-              {!smsEnabled && (
+              {!hasPhone && (
                 <p className="text-sm leading-relaxed text-foreground/45 md:text-base">
                   Enter a phone number above to opt in to SMS messages.
                 </p>
@@ -476,20 +474,22 @@ export function ContactForm() {
               <div
                 className={cn(
                   "flex flex-col gap-3 transition-opacity duration-200",
-                  !smsEnabled && "opacity-50"
+                  !hasPhone && "opacity-50"
                 )}
               >
                 <label
-                  data-cursor={smsEnabled ? undefined : "disabled"}
+                  data-cursor={hasPhone ? undefined : "disabled"}
                   className={cn(
                     "flex items-start gap-3 text-[15px] font-medium leading-relaxed text-foreground/80 md:text-base",
-                    !smsEnabled && "cursor-not-allowed"
+                    !hasPhone && "cursor-not-allowed"
                   )}
                 >
                   <input
                     type="checkbox"
                     name="smsAccountConsent"
-                    disabled={!smsEnabled}
+                    checked={smsAccountConsent}
+                    onChange={(e) => setSmsAccountConsent(e.target.checked)}
+                    disabled={!hasPhone}
                     className="mt-0.5 h-4 w-4 shrink-0 accent-[color:var(--color-accent)] disabled:cursor-not-allowed"
                   />
                   <span>
@@ -500,16 +500,18 @@ export function ContactForm() {
                   </span>
                 </label>
                 <label
-                  data-cursor={smsEnabled ? undefined : "disabled"}
+                  data-cursor={hasPhone ? undefined : "disabled"}
                   className={cn(
                     "flex items-start gap-3 text-[15px] font-medium leading-relaxed text-foreground/80 md:text-base",
-                    !smsEnabled && "cursor-not-allowed"
+                    !hasPhone && "cursor-not-allowed"
                   )}
                 >
                   <input
                     type="checkbox"
                     name="smsMarketingConsent"
-                    disabled={!smsEnabled}
+                    checked={smsMarketingConsent}
+                    onChange={(e) => setSmsMarketingConsent(e.target.checked)}
+                    disabled={!hasPhone}
                     className="mt-0.5 h-4 w-4 shrink-0 accent-[color:var(--color-accent)] disabled:cursor-not-allowed"
                   />
                   <span>

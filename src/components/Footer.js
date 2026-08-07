@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 // Only real routes — every href resolves to a page that exists in
@@ -68,7 +68,7 @@ export function Footer() {
         scrollTrigger: {
           trigger: rootRef.current,
           start: "top 88%",
-          toggleActions: "play none none reverse",
+          toggleActions: revealToggleActions(),
         },
       });
 
@@ -84,7 +84,7 @@ export function Footer() {
         scrollTrigger: {
           trigger: rootRef.current,
           start: "top 88%",
-          toggleActions: "play none none reverse",
+          toggleActions: revealToggleActions(),
         },
       });
     }, rootRef);

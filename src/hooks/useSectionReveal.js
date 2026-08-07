@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { registerGsap, gsap, ScrollTrigger } from "@/animations/gsap";
+import {
+  registerGsap,
+  gsap,
+  ScrollTrigger,
+  isMobileViewport,
+} from "@/animations/gsap";
 import { EASE, DUR, STAGGER, TRIGGER } from "@/animations/presets";
 
 /**
@@ -47,7 +52,10 @@ export function useSectionReveal(options = {}) {
     registerGsap();
     const root = scopeRef.current;
     const revealMode = root.dataset.revealMode || "reverse";
-    const oneShot = revealMode === "once";
+    // On mobile every section is one-shot: once text/icons/border have
+    // revealed they stay put when the reader scrolls back up (matches the
+    // card behavior and avoids re-animating on low-power devices).
+    const oneShot = revealMode === "once" || isMobileViewport();
     const observers = [];
 
     const ctx = gsap.context(() => {

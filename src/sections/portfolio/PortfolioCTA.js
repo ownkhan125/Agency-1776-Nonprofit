@@ -7,7 +7,7 @@ import { StarMark } from "@/components/StarMark";
 import { StarField } from "@/components/StarField";
 import { Ribbon } from "@/components/Ribbon";
 import { TacticalButton } from "@/components/TacticalButton";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 
 /**
  * Portfolio Final CTA — cinematic closer with H2, paragraph, and a
@@ -39,7 +39,7 @@ export function PortfolioCTA() {
           scrollTrigger: {
             trigger: "[data-portfolio-cta-h2]",
             start: "top 85%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }

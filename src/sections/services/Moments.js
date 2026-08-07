@@ -5,7 +5,12 @@ import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { StarMark } from "@/components/StarMark";
 import { StarField } from "@/components/StarField";
-import { gsap, registerGsap, ScrollTrigger } from "@/animations/gsap";
+import {
+  gsap,
+  registerGsap,
+  ScrollTrigger,
+  revealToggleActions,
+} from "@/animations/gsap";
 
 const MOMENTS = [
   "The first website visit.",
@@ -45,7 +50,7 @@ export function Moments() {
             scrollTrigger: {
               trigger: n,
               start: "top 82%",
-              toggleActions: "play none none reverse",
+              toggleActions: revealToggleActions(),
             },
           }
         );
@@ -69,7 +74,7 @@ export function Moments() {
           scrollTrigger: {
             trigger: "[data-moments-close]",
             start: "top 82%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }
@@ -96,9 +101,11 @@ export function Moments() {
                 }}
               >
                 <img
-                  src="https://picsum.photos/seed/agency1776-services-moments/900/1100"
+                  src="https://picsum.photos/seed/agency1776-services-moments/700/860"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover mix-blend-luminosity opacity-85"
                 />
                 <div

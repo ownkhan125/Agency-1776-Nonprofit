@@ -1,12 +1,24 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { SplitText } from "@/components/SplitText";
 import { StarField } from "@/components/StarField";
 import { Ribbon } from "@/components/Ribbon";
 import { TacticalButton } from "@/components/TacticalButton";
-import { WaveGridBackground } from "@/components/WaveGridBackground";
 import { gsap, registerGsap } from "@/animations/gsap";
+
+// The wave-grid backdrop pulls in Three.js (~600 KB). Load it lazily as
+// its own chunk (out of the initial bundle) and only mount it on
+// larger, motion-friendly viewports — phones and reduced-motion users
+// get a lightweight CSS wash instead of a WebGL canvas.
+const WaveGridBackground = dynamic(
+  () =>
+    import("@/components/WaveGridBackground").then(
+      (m) => m.WaveGridBackground
+    ),
+  { ssr: false }
+);
 import { EASE, DUR, STAGGER } from "@/animations/presets";
 
 /**
@@ -43,6 +55,21 @@ import { EASE, DUR, STAGGER } from "@/animations/presets";
  */
 export function Hero() {
   const rootRef = useRef(null);
+  // Gate the WebGL backdrop: desktop + motion-friendly only. Starts false
+  // so SSR/first paint (and every phone) renders the CSS fallback; the
+  // canvas chunk is fetched after mount when the viewport qualifies.
+  const [showWaveGrid, setShowWaveGrid] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference)"
+    );
+    const update = () => setShowWaveGrid(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
 
   useLayoutEffect(() => {
     if (!rootRef.current) return;
@@ -176,7 +203,19 @@ export function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
       >
-        <WaveGridBackground className="h-full w-full" />
+        {showWaveGrid ? (
+          <WaveGridBackground className="h-full w-full" />
+        ) : (
+          // Lightweight fallback — a soft radial wash in the brand accent
+          // so the hero still reads as composed without any WebGL cost.
+          <div
+            className="h-full w-full"
+            style={{
+              background:
+                "radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 55%)",
+            }}
+          />
+        )}
       </div>
 
       {/* z-2 — light content-legibility wash centred on the H1. */}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { phoneToE164 } from "@/lib/phone";
 
 // ── Server-only GHL integration ───────────────────────────────────────
 // The contact form POSTs here (same-origin). This route runs on the
@@ -115,7 +116,10 @@ export async function POST(req) {
       firstName: str(body.first_name),
       lastName: str(body.last_name),
       email: str(body.email),
-      phone: str(body.phone),
+      // Re-normalize to E.164 server-side rather than trusting the inbound
+      // string — GHL's contact API matches/sends SMS most reliably on
+      // "+15555550100". Partial/empty inbound → "".
+      phone: phoneToE164(body.phone),
       companyName: str(body.organization_name),
       source: str(body.source) || "Agency 1776 Nonprofit — Contact Form",
       customFields,
