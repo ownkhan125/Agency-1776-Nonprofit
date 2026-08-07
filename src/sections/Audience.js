@@ -5,7 +5,7 @@ import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { StarMark } from "@/components/StarMark";
 import { Ribbon } from "@/components/Ribbon";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 const AUDIENCE = [
@@ -77,7 +77,7 @@ export function Audience() {
           scrollTrigger: {
             trigger: "[data-close]",
             start: "top 78%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }

@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useLayoutEffect } from "react";
-import { registerGsap, ScrollSmoother, ScrollTrigger } from "@/animations/gsap";
+import {
+  registerGsap,
+  ScrollSmoother,
+  ScrollTrigger,
+  isMobileViewport,
+} from "@/animations/gsap";
 
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -31,6 +36,11 @@ export function useSmoothScroll() {
   useIsoLayoutEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Skip ScrollSmoother on phones — the smoothed transform on
+    // #smooth-content is costly on low-power devices and adds scroll lag
+    // (part of why mobile reveals felt slow). Native scroll + ScrollTrigger
+    // work fine without it (see globals.css note).
+    if (isMobileViewport()) return;
 
     registerGsap();
 

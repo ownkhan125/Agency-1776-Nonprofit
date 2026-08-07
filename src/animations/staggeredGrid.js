@@ -1,6 +1,6 @@
 "use client";
 
-import { gsap, ScrollTrigger } from "@/animations/gsap";
+import { gsap, ScrollTrigger, isMobileViewport } from "@/animations/gsap";
 
 /**
  * Vengence UI-style staggered-grid entrance.
@@ -48,6 +48,30 @@ export function applyStaggeredGrid(
 
   const items = Array.from(container.querySelectorAll(selector));
   if (!items.length) return;
+
+  // ── Mobile: fast, one-shot reveal ───────────────────────────────────
+  // The scrubbed column-staircase below is tuned for wide multi-column
+  // desktop layouts. On phones the grid collapses to a single column, so
+  // scrubbing a 450% fly-up over the whole section makes cards crawl in
+  // late AND vanish when the reader scrolls back up. Instead: a quick,
+  // once-only rise as the grid enters — cards appear promptly and stay.
+  if (isMobileViewport()) {
+    gsap.from(items, {
+      yPercent: 40,
+      autoAlpha: 0,
+      duration: 0.5,
+      ease: "power2.out",
+      stagger: 0.08,
+      scrollTrigger: {
+        trigger: container,
+        start: "top 85%",
+        once: true,
+        invalidateOnRefresh: true,
+      },
+    });
+    ScrollTrigger.refresh();
+    return;
+  }
 
   // Group by data-col so column ordering is deterministic and stable
   // across viewports (the grid may visually collapse to a single

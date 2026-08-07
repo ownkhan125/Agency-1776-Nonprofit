@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { Ribbon } from "@/components/Ribbon";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 const STEPS = [
@@ -61,7 +61,7 @@ export function Process() {
             scrollTrigger: {
               trigger: row,
               start: "top 80%",
-              toggleActions: "play none none reverse",
+              toggleActions: revealToggleActions(),
             },
           }
         );
@@ -77,7 +77,7 @@ export function Process() {
             scrollTrigger: {
               trigger: row,
               start: "top 80%",
-              toggleActions: "play none none reverse",
+              toggleActions: revealToggleActions(),
             },
           }
         );

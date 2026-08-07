@@ -6,7 +6,7 @@ import { SectionShell } from "@/components/SectionShell";
 import { SplitText } from "@/components/SplitText";
 import { StarMark } from "@/components/StarMark";
 import { Ribbon } from "@/components/Ribbon";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 import { cn } from "@/utils/cn";
 
 /**
@@ -82,7 +82,7 @@ export function PortfolioShowcase() {
           scrollTrigger: {
             trigger: rows[0],
             start: "top 88%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }
@@ -99,7 +99,7 @@ export function PortfolioShowcase() {
           scrollTrigger: {
             trigger: cards[0],
             start: "top 88%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }

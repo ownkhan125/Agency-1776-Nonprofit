@@ -7,7 +7,7 @@ import { StarMark } from "@/components/StarMark";
 import { StarField } from "@/components/StarField";
 import { Ribbon } from "@/components/Ribbon";
 import { TacticalButton } from "@/components/TacticalButton";
-import { gsap, registerGsap } from "@/animations/gsap";
+import { gsap, registerGsap, revealToggleActions } from "@/animations/gsap";
 
 /**
  * Services Final CTA — cinematic closer. Wide horizontal composition
@@ -39,7 +39,7 @@ export function ServicesFinalCTA() {
           scrollTrigger: {
             trigger: "[data-services-cta-h2]",
             start: "top 82%",
-            toggleActions: "play none none reverse",
+            toggleActions: revealToggleActions(),
           },
         });
       }
